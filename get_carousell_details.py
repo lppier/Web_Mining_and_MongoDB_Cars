@@ -7,7 +7,7 @@ import os
 ### declare constants
 SITEMAP_URL = "https://sg.carousell.com/sitemap.xml"
 CARS_PATTERN = "cars"
-USE_TEST_URLs = False
+USE_TEST_URLs = True
 ## Put None for no limit and get all values
 LIMIT = 5
 ###
@@ -101,7 +101,7 @@ else:
             car_product_urls.extend(get_urls(car_url, "url", "loc"))
 
 print("Obtained the URL for car products...")
-if car_urls and len(car_urls) > 0:
+if car_product_urls and len(car_product_urls) > 0:
     for car_product_url in car_product_urls:
         count = 0
         get_and_insert_car_product_details(car_product_url, insert_into_db)
