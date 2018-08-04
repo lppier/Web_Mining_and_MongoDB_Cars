@@ -7,12 +7,13 @@ import os
 ### declare constants
 SITEMAP_URL = "https://sg.carousell.com/sitemap.xml"
 CARS_PATTERN = "cars"
-USE_TEST_URLs = True
+USE_TEST_URLs = False
 ## Put None for no limit and get all values
-LIMIT = 5
+LIMIT = 10
 ###
 
 def get_urls(base_url, level1, level2, match_pattern = None):
+    """Get the urls from the XML file which are contained inside level1 -> level2 and which match the pattern provided"""
     r = requests.get(base_url)
     xml = r.text
 
@@ -54,20 +55,20 @@ def get_and_insert_car_product_details(car_product_url, insert_into_db):
         # print(main_item_image)
         if main_item_image and len(main_item_image) > 0:
             car_product_details["image_url"] = main_item_image[0]["data-layzr"]
-
-        detail_divs = html_soup.select("div.ef-_a>div")
-        print(detail_divs)
+        
+        # Get the other details of the car
+        detail_divs = html_soup.select("div.ef-_a > div")
+        # print(detail_divs)
         if detail_divs and len(detail_divs) > 0:
-            print("Found detail divs")
             for detail_div in detail_divs:
                 label_label = detail_div.select("label.ef-c")
                 value_p = detail_div.select("p.ef-b.ef-d")
                 label_text = ""
                 value_text = ""
                 if label_label and len(label_label) > 0:
-                    label_text = label_label.text
+                    label_text = label_label[0].text
                 if value_p and len(value_p) > 0:
-                    value_text = value_p.text
+                    value_text = value_p[0].text
                 
                 if label_text:
                     car_product_details[label_text] = value_text
@@ -91,21 +92,25 @@ def insert_into_db(car_product):
         
         print("")
 
-car_product_urls = []
-if USE_TEST_URLs:
-    car_product_urls = get_test_urls()
-else:
-    car_urls = get_urls(SITEMAP_URL, "sitemap", "loc", CARS_PATTERN)
-    if car_urls and len(car_urls) > 0:
-        for car_url in car_urls:
-            car_product_urls.extend(get_urls(car_url, "url", "loc"))
+def main():
+    car_product_urls = []
+    if USE_TEST_URLs:
+        car_product_urls = get_test_urls()
+    else:
+        car_urls = get_urls(SITEMAP_URL, "sitemap", "loc", CARS_PATTERN)
+        if car_urls and len(car_urls) > 0:
+            for car_url in car_urls:
+                car_product_urls.extend(get_urls(car_url, "url", "loc"))
 
-print("Obtained the URL for car products...")
-if car_product_urls and len(car_product_urls) > 0:
-    for car_product_url in car_product_urls:
+    print("Obtained the URL for car products...")
+    if car_product_urls and len(car_product_urls) > 0:
         count = 0
-        get_and_insert_car_product_details(car_product_url, insert_into_db)
-        count += 1
-        if LIMIT and count == LIMIT:
-            break
+        for car_product_url in car_product_urls:
+            get_and_insert_car_product_details(car_product_url, insert_into_db)
+            count += 1
+            if LIMIT and count == LIMIT:
+                break
+
+if __name__ == "__main__":
+    main()
             
