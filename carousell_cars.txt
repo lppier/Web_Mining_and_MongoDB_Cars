@@ -1,0 +1,14 @@
+Obtained the URL for car products...
+Obtained the URL of the car products
+An error occurred: HTTPSConnectionPool(host='sg.carousell.com', port=443): Read timed out. (read timeout=1)
+url: https://sg.carousell.com/p/luxury-sedan-monthly-promo-book-by-9th-august-usual-rental-1599-but-pay-upfront-for-3mths-n-rental-is-1299-mth-usual-deposit-1000-now-only-500-weekly-promo-till-5th-aug-only-usual-rent-499-now-388-for-1-week-and-650-for-2-weeks-deposit-200-182699869/
+title: Luxury sedan MONTHLY PROMO BOOK BY 9TH AUGUST-USUAL RENTAL $1599 but PAY UPFRONT FOR 3MTHS N RENTAL IS $1299/mth. USUAL DEPOSIT- $1000. NOW ONLY $500./WEEKLY PROMO TILL 5TH AUG ONLY- USUAL RENT $499- NOW $388 FOR 1 WEEK AND $650 FOR 2 WEEKS. Deposit $200
+image_url: https://media.karousell.com/media/photos/products/2018/08/04/luxury_sedan_monthly_promo_book_by_9th_augustusual_rental_1599_but_pay_upfront_for_3mths_n_rental_is_1533352273_193e43170
+
+url: https://sg.carousell.com/p/cars-for-rent-only-40-day-if-u-pay-monthly-no-penalty-for-dents-scratches-book-by-9th-august-only-weekly-promo-399-only-pay-upfront-for-2-weeks-699-pay-upfront-for-3months-to-enjoy-rental-of-1299-mth-only-40-day-saab-read-ad-for-all-details-180985147/
+title: CARS FOR RENT-ONLY $40/day IF U PAY MONTHLY.  NO PENALTY FOR DENTS/SCRATCHES. Book by 9th August ONLY/Weekly promo-$399 only.PAY UPFRONT FOR 2 WEEKS-$699 /Pay UPFRONT for 3months to enjoy rental of $1299/mth ONLY=$40/DAY- SAAB. Read ad for all details.
+image_url: https://media.karousell.com/media/photos/products/2018/07/23/cars_for_rentdaily_from_30_if_u_pay_monthly_no_penalty_for_dentsscratches_july_promotion_only_1532313732_9899a015.jpg
+
+An error occurred: HTTPSConnectionPool(host='sg.carousell.com', port=443): Read timed out. (read timeout=1)
+url: https://sg.carousell.com/p/car-available-for-short-long-term-rental-grab-ready-and-for-personal-usage-too-%E2%98%8E%EF%B8%8Fcall-sms-whatsapp-for-booking-reservation-enquiries-%E2%AD%95felicia-8822-3303-8206-5888-%E2%9C%94%EF%B8%8F-nicholas-8204-4888-%E2%9D%8Calan-9180-8916-%F0%9F%8C%9Fhaiqul-8828-3303-fast-response-t-c-apply-182369786/
+An error occurred: 'charmap' codec can't encode characters in position 87-88: character maps to <undefined>

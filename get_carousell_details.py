@@ -7,6 +7,9 @@ import os
 ### declare constants
 SITEMAP_URL = "https://sg.carousell.com/sitemap.xml"
 CARS_PATTERN = "cars"
+USE_TEST_URLs = False
+## Put None for no limit and get all values
+LIMIT = 5
 ###
 
 def get_urls(base_url, level1, level2, match_pattern = None):
@@ -32,36 +35,77 @@ def get_urls(base_url, level1, level2, match_pattern = None):
 def get_and_insert_car_product_details(car_product_url, insert_into_db):
     """
         Gets the details of the car products and insert in the data base. This method can be run in parallel
+        Sample: https://sg.carousell.com/p/suzuki-swift-sport-1-6-manual-178707673/
     """
     try:
         car_product_details = {}
-        r = requests.get(car_product_url, timeout=1)
+        r = requests.get(car_product_url, timeout=3)
         html_soup = BeautifulSoup(r.content, "html.parser")
         
         car_product_details["url"] = car_product_url
         
+        # Get the title
+        title_p = html_soup.select("p.ef-b.ef-e")
+        if title_p and len(title_p) > 0:
+            car_product_details["title"] = title_p[0].text
+
         # Get the image URL
-        main_item_image = html_soup.find("img", {"class": "pdt-thumbnail-image.is-active.lazy-image"})
-        car_product_details["image_url"] = main_item_image.attr["data-layzr"]
-        # main_item_image = html_soup.select_one("")
+        main_item_image = html_soup.select("img.pdt-thumbnail-image.is-active.lazy-image")
+        # print(main_item_image)
+        if main_item_image and len(main_item_image) > 0:
+            car_product_details["image_url"] = main_item_image[0]["data-layzr"]
+
+        detail_divs = html_soup.select("div.ef-_a>div")
+        print(detail_divs)
+        if detail_divs and len(detail_divs) > 0:
+            print("Found detail divs")
+            for detail_div in detail_divs:
+                label_label = detail_div.select("label.ef-c")
+                value_p = detail_div.select("p.ef-b.ef-d")
+                label_text = ""
+                value_text = ""
+                if label_label and len(label_label) > 0:
+                    label_text = label_label.text
+                if value_p and len(value_p) > 0:
+                    value_text = value_p.text
+                
+                if label_text:
+                    car_product_details[label_text] = value_text
+
+        
 
         insert_into_db(car_product_details)
 
     except Exception as e:
         print("An error occurred: " + str(e))
 
+def get_test_urls():
+    """Get test URLs to test the scraping part"""
+    return ["https://sg.carousell.com/p/suzuki-swift-sport-1-6-manual-178707673/"]
+
 def insert_into_db(car_product):
     """ This method needs to be developed to insert the records into the database"""
     if car_product:
         for k in car_product:
             print("{0}: {1}".format(k, car_product[k]))
+        
+        print("")
 
+car_product_urls = []
+if USE_TEST_URLs:
+    car_product_urls = get_test_urls()
+else:
+    car_urls = get_urls(SITEMAP_URL, "sitemap", "loc", CARS_PATTERN)
+    if car_urls and len(car_urls) > 0:
+        for car_url in car_urls:
+            car_product_urls.extend(get_urls(car_url, "url", "loc"))
 
-car_urls = get_urls(SITEMAP_URL, "sitemap", "loc", CARS_PATTERN)
 print("Obtained the URL for car products...")
 if car_urls and len(car_urls) > 0:
-    for car_url in car_urls:
-        car_product_urls = get_urls(car_url, "url", "loc")
-        print("Obtained the URL of the car products")
-        for car_product_url in car_product_urls:
-            get_and_insert_car_product_details(car_product_url, insert_into_db)
+    for car_product_url in car_product_urls:
+        count = 0
+        get_and_insert_car_product_details(car_product_url, insert_into_db)
+        count += 1
+        if LIMIT and count == LIMIT:
+            break
+            
