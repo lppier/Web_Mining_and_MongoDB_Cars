@@ -4,6 +4,8 @@ import re
 import urllib.request
 import os
 
+import mongo_db_operations
+
 ### declare constants
 SITEMAP_URL = "https://sg.carousell.com/sitemap.xml"
 CARS_PATTERN = "cars"
@@ -84,14 +86,6 @@ def get_test_urls():
     """Get test URLs to test the scraping part"""
     return ["https://sg.carousell.com/p/suzuki-swift-sport-1-6-manual-178707673/"]
 
-def insert_into_db(car_product):
-    """ This method needs to be developed to insert the records into the database"""
-    if car_product:
-        for k in car_product:
-            print("{0}: {1}".format(k, car_product[k]))
-        
-        print("")
-
 def main():
     car_product_urls = []
     if USE_TEST_URLs:
@@ -106,7 +100,7 @@ def main():
     if car_product_urls and len(car_product_urls) > 0:
         count = 0
         for car_product_url in car_product_urls:
-            get_and_insert_car_product_details(car_product_url, insert_into_db)
+            get_and_insert_car_product_details(car_product_url, mongo_db_operations.insert_into_db)
             count += 1
             if LIMIT and count == LIMIT:
                 break
