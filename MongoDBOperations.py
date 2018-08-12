@@ -1,3 +1,5 @@
+"""Contains code to interact with Mongo DB"""
+
 from pymongo import MongoClient
 
 import Configurations

@@ -1,3 +1,5 @@
+"""Contains samples to show how to use the API defined in MongoDBOperations class."""
+
 from MongoDBOperations import MongoDBOperations
 
 class MongoDbClient:
