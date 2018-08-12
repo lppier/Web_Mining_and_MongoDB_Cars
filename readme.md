@@ -5,6 +5,12 @@ Dependencies:
 3. install pymongo: pip install pymongo
 4. Update the values of MONGO_DB_PORT to the value noted in step 2 above. By default MongoDb runs on port # 27017 and so it need not be changed
 
+API Usage:
+1. Insert many car details into the collection: 
+See `insert_many_records_sample` method in `MongoDbClient` class
+2. Insert single car detail into the collection:
+See `insert_single_record_sample` method in `MongoDbClient` class
+
 
 
 ***Scraping from [Carousell](https://sg.carousell.com/)***
