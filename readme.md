@@ -1,3 +1,12 @@
+***MongoDb Python API***
+Dependencies:
+1. Install Mongo DB version 3.6.4 or later
+2. Run Mongo DB process and note the port number it is running on
+3. install pymongo: pip install pymongo
+4. Update the values of MONGO_DB_PORT to the value noted in step 2 above. By default MongoDb runs on port # 27017 and so it need not be changed
+
+
+
 ***Scraping from [Carousell](https://sg.carousell.com/)***
 1. Navigate to the robots.txt here: https://sg.carousell.com/robots.txt
 2. Get the sitemap URL from the above location. Here it is: https://sg.carousell.com/sitemap.xml
