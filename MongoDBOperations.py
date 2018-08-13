@@ -9,6 +9,8 @@ class MongoDBOperations:
         self._mongo_client = MongoClient(Configurations.MONGO_DB_HOST, int(Configurations.MONGO_DB_PORT))
         print("Successfully connected to Mongo DB host: {0} and port: {1}".format(Configurations.MONGO_DB_HOST, str(Configurations.MONGO_DB_PORT)))
         self._create_db_and_collections_if_not_exist()
+        self._get_all_manufacturers()
+        self._get_all_models()
 
     def _create_db_and_collections_if_not_exist(self):
         
@@ -58,6 +60,21 @@ class MongoDBOperations:
         else:
             print("No listing detail to insert...")
             return False
+
+    def _get_all_manufacturers(self):
+        """
+            Get all manufacturers in the database.
+        """
+        manufacturers = self._manufacturers_collection.find()
+        self._manufacturers = [manufacturer["name"] for manufacturer in manufacturers]
+
+    def _get_all_models(self):
+        """
+            Get all models in the database.
+        """
+        models = self._models_collection.find()
+        self._models = [model["name"] for model in models]
+
 
 
         

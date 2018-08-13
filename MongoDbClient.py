@@ -37,8 +37,14 @@ class MongoDbClient:
         car_document = self._get_sample_car_record()
         mongo_db_operations.insert_single_listing(car_document)
 
+    def get_manufacturers_models(self):
+        mongo_db_operations = MongoDBOperations()
+        print(mongo_db_operations._manufacturers)
+        print(mongo_db_operations._models)
+
 
 if __name__ == "__main__":
     mongodbclient = MongoDbClient()
-    mongodbclient.insert_many_records_sample()
-    mongodbclient.insert_single_record_sample()
+    #mongodbclient.insert_many_records_sample()
+    #mongodbclient.insert_single_record_sample()
+    mongodbclient.get_manufacturers_models()
