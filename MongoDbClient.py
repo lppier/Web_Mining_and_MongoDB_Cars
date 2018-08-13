@@ -2,6 +2,7 @@
 
 from MongoDBOperations import MongoDBOperations
 
+
 class MongoDbClient:
     def _get_sample_car_records(self):
         return [{
@@ -10,12 +11,12 @@ class MongoDbClient:
             "manufacturer": "Toyota",
             "mileage": "45"
         },
-        {
-            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
-            "model": "Civic",
-            "manufacturer": "Honda",
-            "mileage": "51"
-        }
+            {
+                "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+                "model": "Civic",
+                "manufacturer": "Honda",
+                "mileage": "51"
+            }
         ]
 
     def _get_sample_car_record(self):
@@ -41,4 +42,3 @@ if __name__ == "__main__":
     mongodbclient = MongoDbClient()
     mongodbclient.insert_many_records_sample()
     mongodbclient.insert_single_record_sample()
-

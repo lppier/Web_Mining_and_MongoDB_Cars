@@ -12,9 +12,11 @@ CARS_PATTERN = "cars"
 USE_TEST_URLs = False
 ## Put None for no limit and get all values
 LIMIT = 10
+
+
 ###
 
-def get_urls(base_url, level1, level2, match_pattern = None):
+def get_urls(base_url, level1, level2, match_pattern=None):
     """Get the urls from the XML file which are contained inside level1 -> level2 and which match the pattern provided"""
     r = requests.get(base_url)
     xml = r.text
@@ -25,7 +27,7 @@ def get_urls(base_url, level1, level2, match_pattern = None):
     required_urls = []
     for level1_tag in level1_tags:
         level2_value = level1_tag.findNext(level2).text
-        
+
         # only consider those URLs that have a specific pattern in the text - if provided
         if match_pattern:
             if re.search(match_pattern, level2_value):
@@ -34,6 +36,7 @@ def get_urls(base_url, level1, level2, match_pattern = None):
             required_urls.append(level2_value)
 
     return required_urls
+
 
 def get_and_insert_car_product_details(car_product_url, insert_into_db):
     """
@@ -44,9 +47,9 @@ def get_and_insert_car_product_details(car_product_url, insert_into_db):
         car_product_details = {}
         r = requests.get(car_product_url, timeout=3)
         html_soup = BeautifulSoup(r.content, "html.parser")
-        
+
         car_product_details["url"] = car_product_url
-        
+
         # Get the title
         title_p = html_soup.select("p.ef-b.ef-e")
         if title_p and len(title_p) > 0:
@@ -57,7 +60,7 @@ def get_and_insert_car_product_details(car_product_url, insert_into_db):
         # print(main_item_image)
         if main_item_image and len(main_item_image) > 0:
             car_product_details["image_url"] = main_item_image[0]["data-layzr"]
-        
+
         # Get the other details of the car
         detail_divs = html_soup.select("div.ef-_a > div")
         # print(detail_divs)
@@ -71,20 +74,20 @@ def get_and_insert_car_product_details(car_product_url, insert_into_db):
                     label_text = label_label[0].text
                 if value_p and len(value_p) > 0:
                     value_text = value_p[0].text
-                
+
                 if label_text:
                     car_product_details[label_text] = value_text
-
-        
 
         insert_into_db(car_product_details)
 
     except Exception as e:
         print("An error occurred: " + str(e))
 
+
 def get_test_urls():
     """Get test URLs to test the scraping part"""
     return ["https://sg.carousell.com/p/suzuki-swift-sport-1-6-manual-178707673/"]
+
 
 def main():
     car_product_urls = []
@@ -105,6 +108,6 @@ def main():
             if LIMIT and count == LIMIT:
                 break
 
+
 if __name__ == "__main__":
     main()
-            

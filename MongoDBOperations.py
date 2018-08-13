@@ -4,20 +4,22 @@ from pymongo import MongoClient
 
 import Configurations
 
+
 class MongoDBOperations:
     def __init__(self):
         self._mongo_client = MongoClient(Configurations.MONGO_DB_HOST, int(Configurations.MONGO_DB_PORT))
-        print("Successfully connected to Mongo DB host: {0} and port: {1}".format(Configurations.MONGO_DB_HOST, str(Configurations.MONGO_DB_PORT)))
+        print("Successfully connected to Mongo DB host: {0} and port: {1}".format(Configurations.MONGO_DB_HOST,
+                                                                                  str(Configurations.MONGO_DB_PORT)))
         self._collection = self._create_db_and_collection_if_not_exist()
 
     def _create_db_and_collection_if_not_exist(self):
-        
+
         database_name = Configurations.DATABASE_NAME
         collection_name = Configurations.COLLECTION_NAME
-    
-        database = self._mongo_client[database_name]        
+
+        database = self._mongo_client[database_name]
         collection = database[collection_name]
-    
+
         return collection
 
     def insert_multiple(self, car_details_list):
@@ -55,9 +57,3 @@ class MongoDBOperations:
         else:
             print("No car detail to insert...")
             return False
-
-
-        
-
-
-
