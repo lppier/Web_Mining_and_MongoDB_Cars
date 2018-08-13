@@ -3,5 +3,5 @@ def insert_into_db(car_product):
     if car_product:
         for k in car_product:
             print("{0}: {1}".format(k, car_product[k]))
-        
+
         print("")
