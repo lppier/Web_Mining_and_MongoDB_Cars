@@ -6,4 +6,6 @@ MONGO_DB_PORT = 27017
 DATABASE_NAME = "SingaporeCars"
 
 # collections are like tables
-COLLECTION_NAME = "car_details"
+LISTINGS_COLLECTION_NAME = "listings"
+MANUFACTURERS_COLLECTION_NAME = "manufacturers"
+MODELS_COLLECTION_NAME = "models"
