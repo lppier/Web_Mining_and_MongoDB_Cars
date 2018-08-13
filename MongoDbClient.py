@@ -29,12 +29,12 @@ class MongoDbClient:
     def insert_many_records_sample(self):
         mongo_db_operations = MongoDBOperations()
         car_documents = self._get_sample_car_records()
-        mongo_db_operations.insert_multiple(car_documents)
+        mongo_db_operations.insert_multiple_listings(car_documents)
 
     def insert_single_record_sample(self):
         mongo_db_operations = MongoDBOperations()
         car_document = self._get_sample_car_record()
-        mongo_db_operations.insert_single(car_document)
+        mongo_db_operations.insert_single_listing(car_document)
 
 
 if __name__ == "__main__":
