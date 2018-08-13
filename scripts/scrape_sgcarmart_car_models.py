@@ -34,6 +34,7 @@ with open('../data/sgcarmart_car_models.csv', 'w') as myfile:
         model_elements = soup.find(id="model_attach_menu_child")
 
         for element in model_elements:
-            wr.writerow([manufacturer["name"], element.text])
+            if element.text != "All Models":
+                wr.writerow([manufacturer["name"], element.text])
 
 print("Done scraping")
