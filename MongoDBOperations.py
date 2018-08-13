@@ -22,10 +22,10 @@ class MongoDBOperations:
         manufacturers_collection_name = Configurations.MANUFACTURERS_COLLECTION_NAME
         models_collection_name = Configurations.MODELS_COLLECTION_NAME
 
-        database = self._mongo_client[database_name]
-        self._listings_collection = database[listings_collection_name]
-        self._manufacturers_collection = database[manufacturers_collection_name]
-        self._models_collection = database[models_collection_name]
+        self.database = self._mongo_client[database_name]
+        self._listings_collection = self.database[listings_collection_name]
+        self._manufacturers_collection = self.database[manufacturers_collection_name]
+        self._models_collection = self.database[models_collection_name]
 
     def insert_multiple_listings(self, listing_details_list):
         """Inserts multiple car details into the Mongo DB. It can be used to insert only one item also.
@@ -90,3 +90,18 @@ class MongoDBOperations:
         """
         models = self._models_collection.find()
         self._models = [model["name"] for model in models]
+
+    def _insert_multiple_collection(self, list_of_documents, collection_name):
+        """ (PROTECTED METHOD) Inserts multiple documents into the Mongo DB. Only for internal use and not external consumption!
+
+        Args:
+            list_of_documents (list): The list of documents as dictionary.
+            collection_name (string): The name of the collection to insert to.
+
+        Raises:
+            Exception if there is an error during the insertion
+
+        """
+        self.database[collection_name].insert_many(list_of_documents)
+        print("{0} records inserted in the {1} collection.".format(str(len(list_of_documents)), collection_name))
+
