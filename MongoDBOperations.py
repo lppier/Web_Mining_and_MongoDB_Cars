@@ -23,7 +23,6 @@ class MongoDBOperations:
         models_collection_name = Configurations.MODELS_COLLECTION_NAME
 
         database = self._mongo_client[database_name]
-        # database.create_collection("test")
         self._listings_collection = database[listings_collection_name]
         self._manufacturers_collection = database[manufacturers_collection_name]
         self._models_collection = database[models_collection_name]
