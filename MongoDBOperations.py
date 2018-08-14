@@ -21,11 +21,13 @@ class MongoDBOperations:
         listings_collection_name = Configurations.LISTINGS_COLLECTION_NAME
         manufacturers_collection_name = Configurations.MANUFACTURERS_COLLECTION_NAME
         models_collection_name = Configurations.MODELS_COLLECTION_NAME
+        uninserted_collection_name = Configurations.UNINSERTED_COLLECTION_NAME
 
         self.database = self._mongo_client[database_name]
         self._listings_collection = self.database[listings_collection_name]
         self._manufacturers_collection = self.database[manufacturers_collection_name]
         self._models_collection = self.database[models_collection_name]
+        self._uninserted_collection = self.database[uninserted_collection_name]
 
     def insert_multiple_listings(self, listing_details_list):
         """Inserts multiple car details into the Mongo DB. It can be used to insert only one item also.
@@ -41,7 +43,8 @@ class MongoDBOperations:
             insert_list = []
             error_list = []
 
-            for item in listing_details_list:  # TODO data has to be valid now for it to be inserted
+            # TODO data has to be valid now for it to be inserted, it will show error now due to verification
+            for item in listing_details_list:
                 if self._utility.is_valid_entry(item):
                     title = item["title"]
                     manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
@@ -53,9 +56,18 @@ class MongoDBOperations:
                 else:
                     error_list.append(item)
 
-            self._listings_collection.insert_many(insert_list)
-            print("Inserted {0} documents in the collection".format(str(len(insert_list))))
-            # TODO insert error rows into another collection
+            if len(insert_list) > 0:
+                self._listings_collection.insert_many(insert_list)
+                print("Inserted {0} documents in the collection".format(str(len(insert_list))))
+            else:
+                print("Inserted 0 documents")
+
+            if len(error_list) > 0:
+                self._uninserted_collection.insert_many(error_list)
+                print("{0} documents were not inserted due to errors".format(str(len(error_list))))
+            else:
+                print("No documents not inserted due to errors.")
+
             return True
         else:
             print("No listing detail to insert...")

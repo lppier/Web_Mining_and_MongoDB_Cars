@@ -34,20 +34,28 @@ class Utility:
 
         return manu_model
 
+    def _is_valid_attribute(self, attr_str, item):
+        if attr_str in item:
+            if item[attr_str] == "":
+                return False
+            else:
+                return True
+        else:
+            return False
+
     def is_valid_entry(self, item):
-        if item['transmission'] is "" or None:
+        if not self._is_valid_attribute("transmission", item):
             return False
-        elif item['manufacturer'] is "" or None:
+        elif not self._is_valid_attribute("manufacturer", item):
             return False
-        elif item['model'] is "" or None:
+        elif not self._is_valid_attribute("model", item):
             return False
-        elif item['availability'] is "" or None:
+        elif not self._is_valid_attribute("availability", item):
             return False
-        elif item['url'] is "" or None:
+        elif not self._is_valid_attribute("url", item):
             return False
 
         return True
-
 
 # test_str = "Honda Civic Type-R 2.0M VTEC Turbo GT"
 # list_of_manufacturers =  ['Honda', 'Volkswagen', 'Ferrari', 'Nissan',
