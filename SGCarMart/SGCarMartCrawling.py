@@ -18,7 +18,7 @@ def prepare_cars_urls():
 def fetch_cars_data():
     #cars_urls = prepare_cars_urls()
     car_attributes ={}
-    cars_urls = "http://www.sgcarmart.com/used_cars/info.php?ID=757542&DL=2356"
+    cars_urls = "http://www.sgcarmart.com/used_cars/info.php?ID=757947&DL=2563"
     #for url in cars_urls:
     cars_page = requests.get(cars_urls)
     cars_soup = BeautifulSoup(cars_page.content, 'html.parser')
@@ -26,9 +26,13 @@ def fetch_cars_data():
     cartable = box.find('table')
     rows = cartable.findAll('tr')
     for row in rows:
-        for element in row:
-            if element.name != "None":
-                print(element)
+        r = row.select('.label')
+        print(''.join(r.findAll(text=True)))
+        #rint(r)
+        # for s in r:
+        #     t = s.select('strong')
+        #     for x in t:
+        #         print (''.join(x.findAll(text=True)))
 
 
     print(len(rows))
