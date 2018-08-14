@@ -19,7 +19,7 @@ class MongoDBOperations:
 
     def _create_indexes(self):
         self._listings_collection.create_index([('url', pymongo.TEXT)], name='search_index',
-                                default_language='english')
+                                               default_language='english')
 
     def _create_db_and_collections_if_not_exist(self):
 
@@ -51,16 +51,19 @@ class MongoDBOperations:
 
             # TODO data has to be valid now for it to be inserted, it will show error now due to verification
             for item in listing_details_list:
-                if self._utility.is_valid_entry(item):
+                #if self._utility.is_valid_entry(item):  # TODO re-enable when data is valid
                     title = item["title"]
                     manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
                                                                                         self._models)
                     item["manufacturer"] = manufacturer
                     item["model"] = model
                     item["model_descrip"] = descrip
-                    insert_list.append(item)
-                else:
-                    error_list.append(item)
+                    urls = self._listings_collection.find({"$text": {"$search": "http://url/to/search"}})
+
+                    if urls.count() == 0: # NOTE: this is assuming URL is unique
+                        insert_list.append(item)
+                # else:                         # TODO re-enable when data is valid
+                #     error_list.append(item)
 
             if len(insert_list) > 0:
                 self._listings_collection.insert_many(insert_list)
@@ -72,7 +75,7 @@ class MongoDBOperations:
                 self._uninserted_collection.insert_many(error_list)
                 print("{0} documents were not inserted due to errors".format(str(len(error_list))))
             else:
-                print("No documents not inserted due to errors.")
+                print("All documents inserted.")
 
             return True
         else:

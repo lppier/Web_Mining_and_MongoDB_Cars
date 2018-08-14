@@ -23,11 +23,12 @@ class Utility:
         for manufacturer in manu_list:
             if manufacturer.lower() in tokens_lower:
                 manu_model.append(manufacturer)
+                break
 
         for model in model_list:
             if model.lower() in tokens_lower:
                 manu_model.append(model)
-
+                break
         # del tokens[tokens.index(manu_model[0])]
         # del tokens[tokens.index(manu_model[1])]
         manu_model.append(self._untokenize(tokens))
