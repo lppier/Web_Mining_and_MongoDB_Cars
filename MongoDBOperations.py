@@ -41,15 +41,17 @@ class MongoDBOperations:
             insert_list = []
             error_list = []
 
-            for item in listing_details_list:
-                # TODO error checking here, if not valid put into error list
-                title = item["title"]
-                manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
-                                                                                    self._models)
-                item["manufacturer"] = manufacturer
-                item["model"] = model
-                item["model_descrip"] = descrip
-                insert_list.append(item)
+            for item in listing_details_list:  # TODO data has to be valid now for it to be inserted
+                if self._utility.is_valid_entry(item):
+                    title = item["title"]
+                    manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
+                                                                                        self._models)
+                    item["manufacturer"] = manufacturer
+                    item["model"] = model
+                    item["model_descrip"] = descrip
+                    insert_list.append(item)
+                else:
+                    error_list.append(item)
 
             self._listings_collection.insert_many(insert_list)
             print("Inserted {0} documents in the collection".format(str(len(insert_list))))
@@ -104,4 +106,3 @@ class MongoDBOperations:
         """
         self.database[collection_name].insert_many(list_of_documents)
         print("{0} records inserted in the {1} collection.".format(str(len(list_of_documents)), collection_name))
-

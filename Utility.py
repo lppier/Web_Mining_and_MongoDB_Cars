@@ -3,7 +3,7 @@ import re
 
 
 class Utility:
-    def untokenize(self, words):
+    def _untokenize(self, words):
         text = ' '.join(words)
         step1 = text.replace("`` ", '"').replace(" ''", '"').replace('. . .', '...')
         step2 = step1.replace(" ( ", " (").replace(" ) ", ") ")
@@ -14,7 +14,7 @@ class Utility:
         step6 = step5.replace(" ` ", " '")
         return step6.strip()
 
-    # Returns [Manufacturer, Model, rest of string] tuple
+    # Returns [Manufacturer, Model, original string] tuple
     def manufacturer_and_model(self, str, manu_list, model_list):
         print(str)
         manu_model = []
@@ -30,9 +30,24 @@ class Utility:
 
         # del tokens[tokens.index(manu_model[0])]
         # del tokens[tokens.index(manu_model[1])]
-        manu_model.append(self.untokenize(tokens))
+        manu_model.append(self._untokenize(tokens))
 
         return manu_model
+
+    def is_valid_entry(self, item):
+        if item['transmission'] is "" or None:
+            return False
+        elif item['manufacturer'] is "" or None:
+            return False
+        elif item['model'] is "" or None:
+            return False
+        elif item['availability'] is "" or None:
+            return False
+        elif item['url'] is "" or None:
+            return False
+
+        return True
+
 
 # test_str = "Honda Civic Type-R 2.0M VTEC Turbo GT"
 # list_of_manufacturers =  ['Honda', 'Volkswagen', 'Ferrari', 'Nissan',
