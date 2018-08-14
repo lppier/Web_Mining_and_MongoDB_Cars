@@ -58,7 +58,8 @@ class MongoDBOperations:
                     item["manufacturer"] = manufacturer
                     item["model"] = model
                     item["model_descrip"] = descrip
-                    urls = self._listings_collection.find({"$text": {"$search": "http://url/to/search"}})
+                    url_to_search = "http://url/to/search" # TODO to be replaced with item["url"]
+                    urls = self._listings_collection.find({"$text": {"$search": url_to_search }})
 
                     if urls.count() == 0: # NOTE: this is assuming URL is unique
                         insert_list.append(item)
