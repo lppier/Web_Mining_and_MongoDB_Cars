@@ -25,7 +25,11 @@ def fetch_cars_data():
     box = cars_soup.find(class_ ='box')
     cartable = box.find('table')
     rows = cartable.findAll('tr')
-    #if str(rows[0]).count('strong') == 4:
+    for row in rows:
+        for element in row:
+            if element.name != "None":
+                print(element)
+
 
     print(len(rows))
 
