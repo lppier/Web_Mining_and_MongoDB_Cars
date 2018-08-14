@@ -3,6 +3,7 @@
 from pymongo import MongoClient
 from Utility import Utility
 import Configurations
+import pymongo
 
 
 class MongoDBOperations:
@@ -12,8 +13,13 @@ class MongoDBOperations:
         print("Successfully connected to Mongo DB host: {0} and port: {1}".format(Configurations.MONGO_DB_HOST,
                                                                                   str(Configurations.MONGO_DB_PORT)))
         self._create_db_and_collections_if_not_exist()
+        self._create_indexes()
         self._get_all_manufacturers()
         self._get_all_models()
+
+    def _create_indexes(self):
+        self._listings_collection.create_index([('url', pymongo.TEXT)], name='search_index',
+                                               default_language='english')
 
     def _create_db_and_collections_if_not_exist(self):
 
@@ -21,11 +27,13 @@ class MongoDBOperations:
         listings_collection_name = Configurations.LISTINGS_COLLECTION_NAME
         manufacturers_collection_name = Configurations.MANUFACTURERS_COLLECTION_NAME
         models_collection_name = Configurations.MODELS_COLLECTION_NAME
+        uninserted_collection_name = Configurations.UNINSERTED_COLLECTION_NAME
 
         self.database = self._mongo_client[database_name]
         self._listings_collection = self.database[listings_collection_name]
         self._manufacturers_collection = self.database[manufacturers_collection_name]
         self._models_collection = self.database[models_collection_name]
+        self._uninserted_collection = self.database[uninserted_collection_name]
 
     def insert_multiple_listings(self, listing_details_list):
         """Inserts multiple car details into the Mongo DB. It can be used to insert only one item also.
@@ -41,19 +49,35 @@ class MongoDBOperations:
             insert_list = []
             error_list = []
 
+            # TODO data has to be valid now for it to be inserted, it will show error now due to verification
             for item in listing_details_list:
-                # TODO error checking here, if not valid put into error list
-                title = item["title"]
-                manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
-                                                                                    self._models)
-                item["manufacturer"] = manufacturer
-                item["model"] = model
-                item["model_descrip"] = descrip
-                insert_list.append(item)
+                #if self._utility.is_valid_entry(item):  # TODO re-enable when data is valid
+                    title = item["title"]
+                    manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
+                                                                                        self._models)
+                    item["manufacturer"] = manufacturer
+                    item["model"] = model
+                    item["model_descrip"] = descrip
+                    url_to_search = "http://url/to/search" # TODO to be replaced with item["url"]
+                    urls = self._listings_collection.find({"$text": {"$search": url_to_search }})
 
-            self._listings_collection.insert_many(insert_list)
-            print("Inserted {0} documents in the collection".format(str(len(insert_list))))
-            # TODO insert error rows into another collection
+                    if urls.count() == 0: # NOTE: this is assuming URL is unique
+                        insert_list.append(item)
+                # else:                         # TODO re-enable when data is valid
+                #     error_list.append(item)
+
+            if len(insert_list) > 0:
+                self._listings_collection.insert_many(insert_list)
+                print("Inserted {0} documents in the collection".format(str(len(insert_list))))
+            else:
+                print("Inserted 0 documents")
+
+            if len(error_list) > 0:
+                self._uninserted_collection.insert_many(error_list)
+                print("{0} documents were not inserted due to errors".format(str(len(error_list))))
+            else:
+                print("All documents inserted.")
+
             return True
         else:
             print("No listing detail to insert...")
@@ -104,4 +128,3 @@ class MongoDBOperations:
         """
         self.database[collection_name].insert_many(list_of_documents)
         print("{0} records inserted in the {1} collection.".format(str(len(list_of_documents)), collection_name))
-

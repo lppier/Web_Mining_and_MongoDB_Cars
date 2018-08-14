@@ -3,7 +3,7 @@ import re
 
 
 class Utility:
-    def untokenize(self, words):
+    def _untokenize(self, words):
         text = ' '.join(words)
         step1 = text.replace("`` ", '"').replace(" ''", '"').replace('. . .', '...')
         step2 = step1.replace(" ( ", " (").replace(" ) ", ") ")
@@ -14,7 +14,7 @@ class Utility:
         step6 = step5.replace(" ` ", " '")
         return step6.strip()
 
-    # Returns [Manufacturer, Model, rest of string] tuple
+    # Returns [Manufacturer, Model, original string] tuple
     def manufacturer_and_model(self, str, manu_list, model_list):
         print(str)
         manu_model = []
@@ -23,16 +23,40 @@ class Utility:
         for manufacturer in manu_list:
             if manufacturer.lower() in tokens_lower:
                 manu_model.append(manufacturer)
+                break
 
         for model in model_list:
             if model.lower() in tokens_lower:
                 manu_model.append(model)
-
+                break
         # del tokens[tokens.index(manu_model[0])]
         # del tokens[tokens.index(manu_model[1])]
-        manu_model.append(self.untokenize(tokens))
+        manu_model.append(self._untokenize(tokens))
 
         return manu_model
+
+    def _is_valid_attribute(self, attr_str, item):
+        if attr_str in item:
+            if item[attr_str] == "":
+                return False
+            else:
+                return True
+        else:
+            return False
+
+    def is_valid_entry(self, item):
+        if not self._is_valid_attribute("transmission", item):
+            return False
+        elif not self._is_valid_attribute("manufacturer", item):
+            return False
+        elif not self._is_valid_attribute("model", item):
+            return False
+        elif not self._is_valid_attribute("availability", item):
+            return False
+        elif not self._is_valid_attribute("url", item):
+            return False
+
+        return True
 
 # test_str = "Honda Civic Type-R 2.0M VTEC Turbo GT"
 # list_of_manufacturers =  ['Honda', 'Volkswagen', 'Ferrari', 'Nissan',
