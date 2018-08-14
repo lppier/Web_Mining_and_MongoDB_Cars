@@ -3,6 +3,7 @@
 from pymongo import MongoClient
 from Utility import Utility
 import Configurations
+import pymongo
 
 
 class MongoDBOperations:
@@ -12,8 +13,13 @@ class MongoDBOperations:
         print("Successfully connected to Mongo DB host: {0} and port: {1}".format(Configurations.MONGO_DB_HOST,
                                                                                   str(Configurations.MONGO_DB_PORT)))
         self._create_db_and_collections_if_not_exist()
+        self._create_indexes()
         self._get_all_manufacturers()
         self._get_all_models()
+
+    def _create_indexes(self):
+        self._listings_collection.create_index([('url', pymongo.TEXT)], name='search_index',
+                                default_language='english')
 
     def _create_db_and_collections_if_not_exist(self):
 
