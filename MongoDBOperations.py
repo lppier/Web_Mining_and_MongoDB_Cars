@@ -83,24 +83,6 @@ class MongoDBOperations:
             print("No listing detail to insert...")
             return False
 
-    def insert_single_listing(self, list_details):
-        """Inserts single list details into the Mongo DB.
-
-        Args:
-            list_details: The details of the listing as a dictionary.
-
-        Raises:
-            Exception if there is an error during the insertion
-
-        """
-        if list_details is not None:
-            self._listings_collection.insert_one(list_details)
-            print("Inserted 1 document in the collection.")
-            return True
-        else:
-            print("No listing detail to insert...")
-            return False
-
     def _get_all_manufacturers(self):
         """
             Get all manufacturers in the database.
