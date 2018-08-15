@@ -1,7 +1,7 @@
 """Contains samples to show how to use the API defined in MongoDBOperations class."""
 
 from MongoDBOperations import MongoDBOperations
-
+import Configurations
 
 class MongoDbClient:
     def _get_sample_car_records(self):
@@ -70,7 +70,7 @@ class MongoDbClient:
     def test_aggregation_manufacturers(self):
         mongo_db_operations = MongoDBOperations()
         car_documents = self._get_samples_for_aggregation()
-        mongo_db_operations._insert_aggregates_manufacturer(car_documents)
+        mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MANUFACTURERS_COLLECTION_NAME, "manufacturer")
 
 
 if __name__ == "__main__":

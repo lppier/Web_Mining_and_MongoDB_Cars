@@ -111,52 +111,54 @@ class MongoDBOperations:
         self.database[collection_name].insert_many(list_of_documents)
         print("{0} records inserted in the {1} collection.".format(str(len(list_of_documents)), collection_name))
 
-    def _insert_aggregates_manufacturer(self, listings_insert_list):
-        """Inserts aggregates for the manufacturer
+    def _insert_aggregates_to_collection(self, listings_insert_list, collection_name, identifier):
+        """Inserts aggregates in the specified collection.
 
         Args:
             listings_insert_list (list): The details of the listings as a list of dictionary.
+            collection_name (string): The name of the collection to insert to.
+            identifier (string): The identifier for the records.
 
         Raises:
             Exception if there is an error during the insertion
         """
         if listings_insert_list and len(listings_insert_list) > 0:
-            existing_manufacturers = self._manufacturers_collection.find({})
-            existing_manufacturers = [document for document in existing_manufacturers]
+            existing_records = self.database[collection_name].find({})
+            existing_records = [document for document in existing_records]
             
-            manufacturer_aggregate_values_dict = {}
+            records_aggregate_values_dict = {}
             for item in listings_insert_list:
                 item_price = float(item["price"])
             
-                if manufacturer_aggregate_values_dict.get(item["manufacturer"]):
+                if records_aggregate_values_dict.get(item[identifier]):
                     # first value holds the sum of prices
-                    manufacturer_aggregate_values_dict[item["manufacturer"]][0] = manufacturer_aggregate_values_dict[item["manufacturer"]][0] + item_price
+                    records_aggregate_values_dict[item[identifier]][0] = records_aggregate_values_dict[item[identifier]][0] + item_price
                     
-                    # second value holds the number of cars for the manufacturer
-                    manufacturer_aggregate_values_dict[item["manufacturer"]][1] = manufacturer_aggregate_values_dict[item["manufacturer"]][1] + 1
+                    # second value holds the number of cars for the type
+                    records_aggregate_values_dict[item[identifier]][1] = records_aggregate_values_dict[item[identifier]][1] + 1
                 else:
-                    manufacturer_aggregate_values_dict[item["manufacturer"]] = [item_price, 1]
+                    records_aggregate_values_dict[item[identifier]] = [item_price, 1]
             
             documents_to_update = []
-            for existing_manufacturer in existing_manufacturers:
-                existing_manufacturer_name = existing_manufacturer["name"]
+            for existing_record in existing_records:
+                existing_record_name = existing_record["name"]
 
-                # if the manufacturer name exists in the set that is currently processed
-                if manufacturer_aggregate_values_dict.get(existing_manufacturer_name):
-                    if existing_manufacturer.get("sum_of_prices"):
-                        existing_manufacturer["sum_of_prices"] = existing_manufacturer["sum_of_prices"] + manufacturer_aggregate_values_dict[existing_manufacturer_name][0]
+                # if the record name exists in the set that is currently processed
+                if records_aggregate_values_dict.get(existing_record_name):
+                    if existing_record.get("sum_of_prices"):
+                        existing_record["sum_of_prices"] = existing_record["sum_of_prices"] + records_aggregate_values_dict[existing_record_name][0]
                     else:
-                        existing_manufacturer["sum_of_prices"] =  manufacturer_aggregate_values_dict[existing_manufacturer_name][0]
+                        existing_record["sum_of_prices"] =  records_aggregate_values_dict[existing_record_name][0]
                     
-                    if existing_manufacturer.get("quantity"):
-                        existing_manufacturer["quantity"] = existing_manufacturer["quantity"] + manufacturer_aggregate_values_dict[existing_manufacturer_name][1]
+                    if existing_record.get("quantity"):
+                        existing_record["quantity"] = existing_record["quantity"] + records_aggregate_values_dict[existing_record_name][1]
                     else:
-                        existing_manufacturer["quantity"] =  manufacturer_aggregate_values_dict[existing_manufacturer_name][1]
+                        existing_record["quantity"] =  records_aggregate_values_dict[existing_record_name][1]
 
-                    documents_to_update.append(existing_manufacturer)
+                    documents_to_update.append(existing_record)
             
             for document_to_update in documents_to_update:
-                self._manufacturers_collection.save(document_to_update)
+                self.database[collection_name].save(document_to_update)
                     
 
 
