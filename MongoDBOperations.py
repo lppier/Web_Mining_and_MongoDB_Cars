@@ -159,6 +159,8 @@ class MongoDBOperations:
             
             for document_to_update in documents_to_update:
                 self.database[collection_name].save(document_to_update)
+
+            print('Updates performed for collection: {0} with the identifier: {1}. Number of records: {2}'.format(collection_name, identifier, str(len(documents_to_update))))
                     
 
 

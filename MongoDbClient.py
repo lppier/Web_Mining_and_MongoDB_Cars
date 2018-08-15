@@ -17,7 +17,7 @@ class MongoDbClient:
             }
         ]
 
-    def _get_samples_for_aggregation(self):
+    def _get_manufacturer_samples_for_aggregation(self):
         return [
         {
             "manufacturer": "Toyota",
@@ -56,6 +56,51 @@ class MongoDbClient:
         }
         ]
 
+    def _get_model_samples_for_aggregation(self):
+        return [
+        {
+            "manufacturer": "BMW",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "BMW 116",
+            "model": "116",
+            "mileage": "45",
+            "price": "1000.76"
+        },
+        {
+            "manufacturer": "BMW",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "BMW 116",
+            "model": "116",
+            "mileage": "80",
+            "price": "1200.88"
+        },
+        {
+            "manufacturer": "BMW",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "BMW 120i",
+            "model": "120i",
+            "mileage": "45",
+            "price": "2000"
+        },
+        {
+            "manufacturer": "Honda",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "Honda Jade",
+            "model": "Jade",
+            "mileage": "45",
+            "price": "500"
+        },
+      {
+            "manufacturer": "Honda",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "Honda Jade",
+            "model": "Jade",
+            "mileage": "45",
+            "price": "1200.50"
+        }
+        ]
+
+
     def insert_many_records_sample(self):
         mongo_db_operations = MongoDBOperations()
         car_documents = self._get_sample_car_records()
@@ -69,12 +114,18 @@ class MongoDbClient:
 
     def test_aggregation_manufacturers(self):
         mongo_db_operations = MongoDBOperations()
-        car_documents = self._get_samples_for_aggregation()
+        car_documents = self._get_manufacturer_samples_for_aggregation()
         mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MANUFACTURERS_COLLECTION_NAME, "manufacturer")
+
+    def test_aggregation_models(self):
+        mongo_db_operations = MongoDBOperations()
+        car_documents = self._get_model_samples_for_aggregation()
+        mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MODELS_COLLECTION_NAME, "model")
 
 
 if __name__ == "__main__":
     mongodbclient = MongoDbClient()
     # mongodbclient.insert_many_records_sample()
 #    mongodbclient.get_manufacturers_models()
-    mongodbclient.test_aggregation_manufacturers()
+    # mongodbclient.test_aggregation_manufacturers()
+    mongodbclient.test_aggregation_models()
