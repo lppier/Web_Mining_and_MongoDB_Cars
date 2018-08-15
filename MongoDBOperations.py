@@ -72,6 +72,10 @@ class MongoDBOperations:
             else:
                 print("Inserted 0 documents")
 
+            # code to compute and insert aggregates based on the insert_list
+            self._insert_aggregates_to_collection(insert_list, Configurations.MANUFACTURERS_COLLECTION_NAME, "manufacturer")
+            self._insert_aggregates_to_collection(insert_list, Configurations.MODELS_COLLECTION_NAME, "model")
+
             if len(error_list) > 0:
                 self._uninserted_collection.insert_many(error_list)
                 print("{0} documents were not inserted due to errors".format(str(len(error_list))))

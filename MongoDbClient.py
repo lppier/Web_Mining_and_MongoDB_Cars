@@ -122,10 +122,17 @@ class MongoDbClient:
         car_documents = self._get_model_samples_for_aggregation()
         mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MODELS_COLLECTION_NAME, "model")
 
+    def test_aggregation_combined(self):
+        mongo_db_operations = MongoDBOperations()
+        car_documents = self._get_model_samples_for_aggregation()
+        mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MANUFACTURERS_COLLECTION_NAME, "manufacturer")
+        mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MODELS_COLLECTION_NAME, "model")
+
 
 if __name__ == "__main__":
     mongodbclient = MongoDbClient()
     # mongodbclient.insert_many_records_sample()
 #    mongodbclient.get_manufacturers_models()
     # mongodbclient.test_aggregation_manufacturers()
-    mongodbclient.test_aggregation_models()
+    # mongodbclient.test_aggregation_models()
+    mongodbclient.test_aggregation_combined()
