@@ -154,8 +154,9 @@ class MongoDBOperations:
                         existing_manufacturer["quantity"] =  manufacturer_aggregate_values_dict[existing_manufacturer_name][1]
 
                     documents_to_update.append(existing_manufacturer)
-
-            self._manufacturers_collection.update(documents_to_update)
+            
+            for document_to_update in documents_to_update:
+                self._manufacturers_collection.save(document_to_update)
                     
 
 
