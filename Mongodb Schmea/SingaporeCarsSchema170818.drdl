@@ -1,0 +1,90 @@
+schema:
+- db: SingaporeCars
+  tables:
+  - table: listings
+    collection: listings
+    pipeline: []
+    columns:
+    - Name: _id
+      MongoType: bson.ObjectId
+      SqlName: _id
+      SqlType: varchar
+    - Name: manufacturer
+      MongoType: string
+      SqlName: manufacturer
+      SqlType: varchar
+    - Name: mileage
+      MongoType: string
+      SqlName: mileage
+      SqlType: varchar
+    - Name: model
+      MongoType: string
+      SqlName: model
+      SqlType: varchar
+    - Name: url
+      MongoType: string
+      SqlName: url
+      SqlType: varchar
+  - table: manufacturers
+    collection: manufacturers
+    pipeline: []
+    columns:
+    - Name: _id
+      MongoType: bson.ObjectId
+      SqlName: _id
+      SqlType: varchar
+    - Name: name
+      MongoType: string
+      SqlName: name
+      SqlType: varchar
+    - Name: quantity
+      MongoType: int
+      SqlName: quantity
+      SqlType: int
+    - Name: sum_of_prices
+      MongoType: float64
+      SqlName: sum_of_prices
+      SqlType: float
+  - table: manufacturers_models
+    collection: manufacturers
+    pipeline:
+    - $unwind:
+        includeArrayIndex: models_idx
+        path: $models
+    columns:
+    - Name: _id
+      MongoType: bson.ObjectId
+      SqlName: _id
+      SqlType: varchar
+    - Name: models
+      MongoType: string
+      SqlName: models
+      SqlType: varchar
+    - Name: models_idx
+      MongoType: int
+      SqlName: models_idx
+      SqlType: int
+  - table: models
+    collection: models
+    pipeline: []
+    columns:
+    - Name: _id
+      MongoType: bson.ObjectId
+      SqlName: _id
+      SqlType: varchar
+    - Name: manufacturer
+      MongoType: string
+      SqlName: manufacturer
+      SqlType: varchar
+    - Name: name
+      MongoType: string
+      SqlName: name
+      SqlType: varchar
+    - Name: quantity
+      MongoType: int
+      SqlName: quantity
+      SqlType: int
+    - Name: sum_of_prices
+      MongoType: float64
+      SqlName: sum_of_prices
+      SqlType: float

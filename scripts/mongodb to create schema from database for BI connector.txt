@@ -1,0 +1,1 @@
+mongodrdl --host localhost:27017 --db SingaporeCars --sampleSize 1000 -o c:\users\ryant\Documents\SingaporeCarsSchema.drdl
