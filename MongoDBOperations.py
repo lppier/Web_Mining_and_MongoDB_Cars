@@ -82,10 +82,10 @@ class MongoDBOperations:
             else:
                 print("All documents inserted.")
 
-            return True
+            return len(insert_list), len(error_list)
         else:
             print("No listing detail to insert...")
-            return False
+            return 0, None
 
     def _get_all_manufacturers(self):
         """
