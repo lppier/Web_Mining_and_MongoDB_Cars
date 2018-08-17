@@ -100,6 +100,55 @@ class MongoDbClient:
         }
         ]
 
+    def _get_samples_with_date_for_aggregation(self):
+        return [
+        {
+            "manufacturer": "Audi",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "Audi S8",
+            "model": "S8",
+            "mileage": "45",
+            "price": "1000.76",
+            "date_posted": "2016-11-12"
+        },
+        {
+            "manufacturer": "Audi",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "Audi S8",
+            "model": "S8",
+            "mileage": "80",
+            "price": "1200.88",
+            "date_posted": "2017-10-17"
+        },
+        {
+            "manufacturer": "Audi",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "Audi TTRS",
+            "model": "TTRS",
+            "mileage": "45",
+            "price": "2000",
+            "date_posted": "2018-01-19"
+        },
+        {
+            "manufacturer": "Ford",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "Ford Galaxy",
+            "model": "Galaxy",
+            "mileage": "45",
+            "price": "500",
+            "date_posted": "2018-03-03"
+        },
+        {
+            "manufacturer": "Ford",
+            "url": "https://www.tutorialspoint.com/How-to-insert-a-Python-object-in-Mongodb",
+            "title": "Ford Galaxy",
+            "model": "Galaxy",
+            "mileage": "45",
+            "price": "1200.50",
+            "date_posted": "2018-04-06"
+        }
+        ]
+
 
     def insert_many_records_sample(self):
         mongo_db_operations = MongoDBOperations()
@@ -124,7 +173,7 @@ class MongoDbClient:
 
     def test_aggregation_combined(self):
         mongo_db_operations = MongoDBOperations()
-        car_documents = self._get_model_samples_for_aggregation()
+        car_documents = self._get_samples_with_date_for_aggregation()
         mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MANUFACTURERS_COLLECTION_NAME, "manufacturer")
         mongo_db_operations._insert_aggregates_to_collection(car_documents, Configurations.MODELS_COLLECTION_NAME, "model")
 

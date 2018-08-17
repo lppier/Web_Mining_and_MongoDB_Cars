@@ -2,6 +2,7 @@
 
 from pymongo import MongoClient
 from Utility import Utility
+import datetime
 import Configurations
 import pymongo
 
@@ -16,6 +17,7 @@ class MongoDBOperations:
         self._create_indexes()
         self._get_all_manufacturers()
         self._get_all_models()
+        self._time_format = "%Y-%m-%d"
 
     def _create_indexes(self):
         self._listings_collection.create_index([('url', pymongo.TEXT)], name='search_index',
@@ -129,10 +131,18 @@ class MongoDBOperations:
         if listings_insert_list and len(listings_insert_list) > 0:
             existing_records = self.database[collection_name].find({})
             existing_records = [document for document in existing_records]
-            
+            current_date = datetime.datetime.now().date()
+
             records_aggregate_values_dict = {}
             for item in listings_insert_list:
                 item_price = float(item["price"])
+
+                date_difference_days = 0
+                
+                if item["date_posted"]:
+                    listing_date = datetime.datetime.strptime(item["date_posted"],  self._time_format).date()
+                    date_difference = current_date - listing_date
+                    date_difference_days = date_difference.days
             
                 if records_aggregate_values_dict.get(item[identifier]):
                     # first value holds the sum of prices
@@ -140,8 +150,11 @@ class MongoDBOperations:
                     
                     # second value holds the number of cars for the type
                     records_aggregate_values_dict[item[identifier]][1] = records_aggregate_values_dict[item[identifier]][1] + 1
+
+                    # third value holds the date difference
+                    records_aggregate_values_dict[item[identifier]][2] = records_aggregate_values_dict[item[identifier]][2] + date_difference_days
                 else:
-                    records_aggregate_values_dict[item[identifier]] = [item_price, 1]
+                    records_aggregate_values_dict[item[identifier]] = [item_price, 1, date_difference_days]
             
             documents_to_update = []
             for existing_record in existing_records:
@@ -158,6 +171,11 @@ class MongoDBOperations:
                         existing_record["quantity"] = existing_record["quantity"] + records_aggregate_values_dict[existing_record_name][1]
                     else:
                         existing_record["quantity"] =  records_aggregate_values_dict[existing_record_name][1]
+
+                    if existing_record.get("total_days_posted"):
+                        existing_record["total_days_posted"] = existing_record["total_days_posted"] +  records_aggregate_values_dict[existing_record_name][2]
+                    else:
+                        existing_record["total_days_posted"] = records_aggregate_values_dict[existing_record_name][2]
 
                     documents_to_update.append(existing_record)
             
