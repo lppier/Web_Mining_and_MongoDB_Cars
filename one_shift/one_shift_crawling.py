@@ -32,7 +32,24 @@ def fetch_cars_data(url):
     for element in elements:
         items = element.select("td")
         if len(items) == 2:
-            car_info[items[0].text.strip()] = items[1].text.strip()
+            key = items[0].text.strip()
+
+            # exceptions
+            if key == "Reg Date":
+                items[1].find("span").extract()
+                value = items[1].text.strip()
+            elif key == "Features":
+                values = []
+                for val in items[1].find_all("li"):
+                    values.append(val.text.strip())
+                value = ", ".join(values)
+            else:
+                value = items[1].text.strip()
+
+            # if currency
+            
+
+            car_info[key] = value
 
     return car_info
 
