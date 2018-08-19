@@ -202,9 +202,10 @@ def get_all_cars_data():
 #prepare_cars_urls()
 cars_data = get_all_cars_data()
 #get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
-print("Total records: " + str(len(cars_data)))
+
 mongo_db_operations = MongoDBOperations()
 success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
 
+print("Total records: " + str(len(cars_data)))
 print("Number of records successfully inserted: " + str(success))
 print("Number of records failed to insert: " + str(failures))
