@@ -145,8 +145,8 @@ class MongoDBOperations:
 
                 date_difference_days = 0
                 
-                if item["date_posted"]:
-                    listing_date = datetime.datetime.strptime(item["date_posted"],  self._time_format).date()
+                if item["posted_on"]:
+                    listing_date = datetime.datetime.strptime(item["posted_on"],  self._time_format).date()
                     date_difference = current_date - listing_date
                     date_difference_days = date_difference.days
             
