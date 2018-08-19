@@ -4,12 +4,18 @@ import requests
 import json
 import re
 import locale
+from datetime import datetime, timedelta
+import time
+import random
 
-base_url = "http://www.oneshift.com/used_cars/listings.php"
+BASE_URL = "http://www.oneshift.com/used_cars/listings.php"
+DATA_FILE = "../data/one_shift_cars_data.json"
+CRAWL_PAGE_LIMIT = 20
 
 car_info_dict = {
     "ad posted": {"name": "posted_on", "type": "date"},
     "availabilty": {"name": "availability", "type": "boolean"},
+    "arf": {"name": "arf", "type": "currency"},
     "car category": {"name": "category", "type": "string"},
     "car type": {"name": "type_of_veh", "type": "string"},
     "coe": {"name": "coe", "type": "currency"},
@@ -28,6 +34,7 @@ car_info_dict = {
     "no. of owners": {"name": "no_of_owners", "type": "integer"},
     "omv": {"name": "omv", "type": "currency"},
     "reg date": {"name": "reg_date", "type": "date"},
+    "renewed coe expiry date": {"name": "renewed_coe_expiry_date", "type": "date"},
     "road tax": {"name": "road_tax", "type": "currency"},
     "selling price": {"name": "price", "type": "currency"},
     "title": {"name": "title", "type": "string"},
@@ -54,24 +61,33 @@ def process_value(key, value):
 
 
 def string_to_isoformatdate(datestring):
-    date = parser.parse(datestring)
-    isodate = str(date.isoformat())[:-9]
+    if datestring.find("hours ago") > -1:
+        hours = int(datestring.replace(" hours ago", ""))
+        isodate = (datetime.today() - timedelta(hours=hours)).isoformat()[:10]
+    elif datestring.find("days ago") > -1:
+        days = int(datestring.replace(" days ago", ""))
+        isodate = (datetime.today() - timedelta(days=days)).isoformat()[:10]
+    elif datestring.find("yesterday") > -1:
+        isodate = (datetime.today() - timedelta(days=1)).isoformat()[:10]
+    else:
+        date = parser.parse(datestring)
+        isodate = str(date.isoformat())[:-9]
     return isodate
 
 
 def currency_to_float(currency_string):
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-    return locale.atof(currency_string.strip("$"))
+    return 0.0 if currency_string == "-" else locale.atof(currency_string.strip("$"))
 
 
 def string_to_integer(string):
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-    return locale.atoi(string)
+    return 0 if string == "-" else locale.atoi(string)
 
 
 def string_to_float(string):
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-    return locale.atof(string)
+    return 0.0 if string == "-" else locale.atof(string)
 
 
 def fetch_cars_links(url):
@@ -87,13 +103,51 @@ def fetch_cars_links(url):
     return urls
 
 
+def prepare_cars_urls():
+    cars_urls = []
+    i = 1
+    while i <= CRAWL_PAGE_LIMIT:
+        url = "{}?NumPerPages=&pageid={}#listings_top".format(BASE_URL, i)
+        print(url)
+        cars_urls += fetch_cars_links(url)
+        i += 1
+    return cars_urls
+
+
+def get_all_cars_data():
+    cars_urls = prepare_cars_urls()
+    cars_data = []
+    i = 0
+    j = 1
+
+    for car_url in cars_urls:
+        if i % 20 == 0:
+            time.sleep(random.randint(5, 10))
+            write_to_file(cars_data, filename=DATA_FILE + ".{}".format(j))
+            cars_data = []
+            j += 1
+        else:
+            time.sleep(random.randint(0, 2))
+        cars_data.append(fetch_cars_data(car_url))
+        i += 1
+
+    write_to_file(cars_data, filename=DATA_FILE + ".{}".format(j))
+    return cars_data
+
+
+def write_to_file(cars_data, filename=DATA_FILE):
+    with open(filename, 'w') as fout:
+        json.dump(cars_data, fout)
+    print("File with the name {} has been created successfully.".format(filename))
+
+
 def populate_missing_fields(car_info):
-    car_info["manufactured"] = 0
-    car_info["arf"] = 0.0
-    car_info["power"] = 0.0
-    car_info["curb_weight"] = 0.0
-    car_info["accessories"] = ""
-    car_info["dereg_value"] = 0.0
+    car_info["manufactured"] = car_info["manufactured"] if "manufactured" in car_info else 0
+    car_info["arf"] = car_info["arf"] if "arf" in car_info else 0.0
+    car_info["power"] = car_info["power"] if "power" in car_info else 0.0
+    car_info["curb_weight"] = car_info["curb_weight"] if "curb_weight" in car_info else 0.0
+    car_info["accessories"] = car_info["accessories"] if "accessories" in car_info else ""
+    car_info["dereg_value"] = car_info["dereg_value"] if "dereg_value" in car_info else 0.0
     car_info["valid"] = True
     return car_info
 
@@ -107,10 +161,14 @@ def fetch_cars_data(url):
     car_info = dict()
     car_info["title"] = car_element.select_one("div:nth-of-type(1) > div:nth-of-type(1) > h1 > a").text.strip().lower()
     car_info["url"] = url
+    print(car_info)
 
     # car image url
-    image_link = car_soup.select_one("#classified_car_photo1 > a > div.large_classified_thumbs")["style"].split()[0]
-    car_info["image_url"] = re.search("http:\/\/(.*)\.jpg", image_link, re.I).group()
+    try:
+        image_link = car_soup.select_one("#classified_car_photo1 > a > div.large_classified_thumbs")["style"].split()[0]
+        car_info["image_url"] = re.search("http:\/\/(.*[^\)])", image_link, re.I).group()
+    except TypeError as e:
+        car_info["image_url"] = ""
 
     # specs information
     specs_elements = car_element.select("#spec-table > tbody > tr")
@@ -159,25 +217,41 @@ def fetch_cars_data(url):
         i += 1
 
     # dealer information
-    dealer_elements = car_soup.select_one(
+    seller_elements = car_soup.select_one(
         "#wrapper > div.container > div.row.mtop10 > div.col-sm-12.col-xs-12.mtop10 > div.row > div.col-xs-12.col-sm-8 > div:nth-of-type(4)")
 
-    car_info["dealer_consultant_name"] = dealer_elements.select_one(".consultant-name").text.strip().lower()
-    car_info["dealer_company_name"] = dealer_elements.select_one(".greylinebottom").text.strip().lower()
+    # if this is a direct seller posting
+    car_info["seller"] = {}
+    if seller_elements.select_one("#seller-contact"):
+        seller_contact_persons = []
+        for name in seller_elements.select("#seller-contact > div.value"):
+            seller_contact_persons.append(name.text.strip())
+        car_info["seller"]["contact_persons"] = ", ".join(seller_contact_persons)
+        car_info["seller"]["type"] = "direct_seller"
+    # if this is a dealer posting
+    else:
+        consultant_names = []
+        for name in seller_elements.select(".consultant-name"):
+            consultant_names.append(name.text.strip().lower())
 
-    dealer_address = []
-    for element in dealer_elements.select_one(".company-address").contents:
-        if element.name == "br":
-            dealer_address.append(element.text.strip().replace("\u00A0", " ").lower())
-        else:
-            dealer_address.append(element.strip().lower())
-    car_info["dealer_company_address"] = ", ".join(dealer_address)
+        car_info["seller"]["contact_persons"] = ", ".join(consultant_names)
+        car_info["seller"]["dealer_name"] = seller_elements.select_one(".greylinebottom").text.strip().lower()
+
+        dealer_address = []
+        for element in seller_elements.select_one(".company-address").contents:
+            if element.name == "br":
+                dealer_address.append(element.text.strip().replace("\u00A0", " ").lower())
+            else:
+                dealer_address.append(element.strip().lower())
+        car_info["seller"]["dealer_address"] = ", ".join(dealer_address)
+        car_info["seller"]["type"] = "dealer"
 
     # populate missing fields
     return populate_missing_fields(car_info)
 
 
-# print(fetch_cars_links(base_url))
-
-print(json.dumps(fetch_cars_data("http://www.oneshift.com/used_cars/ads_detail.php?adid=241819"), sort_keys=True,
-                 indent=4))
+if __name__ == "__main__":
+    # print(fetch_cars_links(BASE_URL))
+    # print(json.dumps(fetch_cars_data("http://www.oneshift.com/used_cars/ads_detail.php?adid=231795"), sort_keys=True,
+    #                  indent=4))
+    print(get_all_cars_data())
