@@ -117,9 +117,9 @@ def get_single_car_data(car_url):
                     car_attributes['depreciation'] = float((feature_value.split('/')[0]).strip())
                 elif feature_key == 'availability' :
                     if feature_value == 'available':
-                       car_attributes[feature_key] = 'True'
+                       car_attributes[feature_key] = True
                     else:
-                       car_attributes[feature_key] = 'False'
+                       car_attributes[feature_key] = False
 
                 else:
                     car_attributes[feature_key] = feature_value
@@ -133,7 +133,7 @@ def get_single_car_data(car_url):
     car_attributes['posted_on'] = posted_on_date_value
 
     car_attributes['source'] = "sgcarmart"
-    car_attributes['valid'] = 'True'
+    car_attributes['valid'] = True
 
     updated_on_value = (post_status[1].split(':')[1]).strip()
     updated_on_date_value = string_to_isoformatdate(updated_on_value)
@@ -189,10 +189,16 @@ def get_all_cars_data():
     for car_url in cars_urls:
         cars_data.append(get_single_car_data(car_url))
 
-    print(cars_data)
-    write_to_file(cars_data)
+    # print(cars_data)
+    # write_to_file(cars_data)
     return cars_data
 
 #prepare_cars_urls()
-get_all_cars_data()
+cars_data = get_all_cars_data()
 #get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
+print("Total records: " + str(len(cars_data)))
+mongo_db_operations = MongoDBOperations()
+success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
+
+print("Number of records successfully inserted: " + str(success))
+print("Number of records failed to insert: " + str(failures))

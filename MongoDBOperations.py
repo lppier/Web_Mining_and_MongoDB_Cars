@@ -53,7 +53,8 @@ class MongoDBOperations:
 
             # TODO data has to be valid now for it to be inserted, it will show error now due to verification
             for item in listing_details_list:
-                if self._utility.is_valid_entry(item):  # TODO re-enable when data is valid
+                validity_check_result = self._utility.is_valid_entry(item)
+                if validity_check_result[0]:  # TODO re-enable when data is valid
                     title = item["title"]
                     manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
                                                                                         self._models)
@@ -65,7 +66,9 @@ class MongoDBOperations:
 
                     if urls.count() == 0: # NOTE: this is assuming URL is unique
                         insert_list.append(item)
-                else:                         # TODO re-enable when data is valid
+                else: 
+                    # TODO re-enable when data is valid
+                    item["error_details"] = validity_check_result[1]
                     error_list.append(item)
 
             if len(insert_list) > 0:

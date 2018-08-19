@@ -50,7 +50,7 @@ class Utility:
         required_attributes = ["availability", "transmission", "url", "posted_on", "title", "source"]
         for required_attribute in required_attributes:
             if not self._is_valid_attribute(required_attribute, item):
-                return False 
+                return (False, "mandatory value required for {0}".format(required_attribute))
         
         # these attribute values must not be strings
         real_valued_attributes = ["price"]
@@ -60,12 +60,12 @@ class Utility:
         
         for real_valued_attribute in real_valued_attributes:
             if item[real_valued_attribute] and type(item[real_valued_attribute]) == type("str"):
-                return False
+                return (False, "Real value required for {0}".format(real_valued_attribute))
 
         for boolean_valued_attribute in boolean_valued_attributes:
             if item[boolean_valued_attribute] and type(item[boolean_valued_attribute]) != type(True):
-                return False
-        return True
+                return (False, "Boolean value required for {0}".format(boolean_valued_attribute))
+        return (True, "None")
 
 # test_str = "Honda Civic Type-R 2.0M VTEC Turbo GT"
 # list_of_manufacturers =  ['Honda', 'Volkswagen', 'Ferrari', 'Nissan',
