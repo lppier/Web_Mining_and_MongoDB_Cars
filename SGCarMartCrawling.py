@@ -46,6 +46,9 @@ def convert_to_float(str_value):
     except ValueError:
         return ""
 
+def num_there(s):
+    return any(i.isdigit() for i in s)
+
 def get_single_car_data(car_url):
     car_attributes = {}
     car_attributes_list = ['price', 'depreciation', 'reg_date', 'lifespan', 'manufactured', 'mileage', 'transmission', 'engine_cap', 'road_tax',
@@ -186,7 +189,64 @@ def get_single_car_data(car_url):
                         else:
                             upfront_payment['total_upfront_payment'] = float(payment_value.split('(')[0].strip())
             car_attributes["upfront_payment"] = upfront_payment
-        #print(car_attributes)
+
+    #Seller Information
+    seller_info = {}
+    seller_attribute_list = ['company', 'address', 'office_no', 'contact_persons', 'location', 'contact_no', 'Contact Person(s)']
+    contact_persons =[]
+
+    seller_info_soup = cars_soup.find("div", {"id": "sellerinfo"})
+    if seller_info_soup:
+        sellers_info_table = seller_info_soup.find('table')
+        seller_info_rows = sellers_info_table.findAll('tr')
+        for row in seller_info_rows:
+            seller_data = row.findAll('td')
+            if len(seller_data) > 1:
+                seller_key = ((''.join(seller_data[0].findAll(text=True))).strip()).lower()
+                seller_value = ((''.join(seller_data[1].findAll(text=True))).strip()).lower()
+
+                if " " in seller_key or "." in seller_key:
+                    seller_key = seller_key.replace(" ", "_")
+                    seller_key = seller_key.replace(".", "")
+                if " " in seller_key:
+                    seller_key = seller_key.replace(" ", "_")
+                if "." in seller_key:
+                    seller_key = seller_key.replace(" ", "")
+
+                if " " in seller_key or "(" in seller_key or ")" in seller_key:
+                    seller_key = seller_key.replace(" ", "_")
+                    seller_key = seller_key.replace("(", "")
+                    seller_key = seller_key.replace(")", "")
+                if seller_key in seller_attribute_list:
+                    if seller_key == 'company':
+                        if seller_value == '-' or seller_value == '' or seller_value == 'n.a.':
+                            seller_value = ''
+                            seller_info['company'] = seller_value
+                        elif len(seller_value.split('»')) > 1:
+                            seller_info['company'] = seller_value.split('»')[0]
+                        else:
+                            seller_info['company'] = seller_value
+                    elif seller_key == 'contact_persons':
+                            for data in seller_data:
+                                person = ((''.join(data.findAll(text=True))).strip()).lower()
+                                if not num_there(person):
+                                    if person != 'contact person(s)':
+                                        contact_persons.append(person)
+                            if len(contact_persons) < 2:
+                                seller_info['contact_persons'] = contact_persons[0]
+                            else:
+                                seller_info['contact_persons'] = contact_persons
+
+                    else:
+                        seller_info[seller_key] = seller_value
+        if 'company' in seller_info:
+            seller_info['type'] = 'dealer'
+        else:
+            seller_info['type'] = 'direct_seller'
+
+
+        car_attributes['seller_information'] = seller_info
+        print(car_attributes)
     return car_attributes
 
 def get_all_cars_data():
@@ -199,13 +259,15 @@ def get_all_cars_data():
     # write_to_file(cars_data)
     return cars_data
 
-#prepare_cars_urls()
-cars_data = get_all_cars_data()
-#get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
+#get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=699459&DL=1180')
 
-mongo_db_operations = MongoDBOperations()
-success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
-
-print("Total records: " + str(len(cars_data)))
-print("Number of records successfully inserted: " + str(success))
-print("Number of records failed to insert: " + str(failures))
+# #prepare_cars_urls()
+# cars_data = get_all_cars_data()
+# #get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
+#
+# mongo_db_operations = MongoDBOperations()
+# success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
+#
+# print("Total records: " + str(len(cars_data)))
+# print("Number of records successfully inserted: " + str(success))
+# print("Number of records failed to insert: " + str(failures))
