@@ -114,9 +114,9 @@ def get_single_car_data(car_url):
                     car_attributes['depreciation'] = float((feature_value.split('/')[0]).strip())
                 elif feature_key == 'availability' :
                     if feature_value == 'available':
-                       car_attributes[feature_key] = True
+                       car_attributes[feature_key] = 'True'
                     else:
-                       car_attributes[feature_key] = False
+                       car_attributes[feature_key] = 'False'
 
                 else:
                     car_attributes[feature_key] = feature_value
@@ -130,7 +130,7 @@ def get_single_car_data(car_url):
     car_attributes['posted_on'] = posted_on_date_value
 
     car_attributes['source'] = "sgcarmart"
-    car_attributes['valid'] = True
+    car_attributes['valid'] = 'True'
 
     updated_on_value = (post_status[1].split(':')[1]).strip()
     updated_on_date_value = string_to_isoformatdate(updated_on_value)
