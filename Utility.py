@@ -37,7 +37,7 @@ class Utility:
 
     def _is_valid_attribute(self, attr_str, item):
         if attr_str in item:
-            if item[attr_str] == "":
+            if not item[attr_str] or item[attr_str] == "":
                 return False
             else:
                 return True
@@ -45,17 +45,26 @@ class Utility:
             return False
 
     def is_valid_entry(self, item):
-        if not self._is_valid_attribute("transmission", item):
-            return False
-        elif not self._is_valid_attribute("manufacturer", item):
-            return False
-        elif not self._is_valid_attribute("model", item):
-            return False
-        elif not self._is_valid_attribute("availability", item):
-            return False
-        elif not self._is_valid_attribute("url", item):
-            return False
+        
+        # these are the required attributes
+        required_attributes = ["availability", "transmission", "url", "posted_on", "title", "source"]
+        for required_attribute in required_attributes:
+            if not self._is_valid_attribute(required_attribute, item):
+                return False 
+        
+        # these attribute values must not be strings
+        real_valued_attributes = ["price"]
 
+        # these attribute values must be booleans
+        boolean_valued_attributes = ["availability"]
+        
+        for real_valued_attribute in real_valued_attributes:
+            if item[real_valued_attribute] and type(item[real_valued_attribute]) == type("str"):
+                return False
+
+        for boolean_valued_attribute in boolean_valued_attributes:
+            if item[boolean_valued_attribute] and type(item[boolean_valued_attribute]) != type(True):
+                return False
         return True
 
 # test_str = "Honda Civic Type-R 2.0M VTEC Turbo GT"

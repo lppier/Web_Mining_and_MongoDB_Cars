@@ -53,20 +53,20 @@ class MongoDBOperations:
 
             # TODO data has to be valid now for it to be inserted, it will show error now due to verification
             for item in listing_details_list:
-                #if self._utility.is_valid_entry(item):  # TODO re-enable when data is valid
+                if self._utility.is_valid_entry(item):  # TODO re-enable when data is valid
                     title = item["title"]
                     manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
                                                                                         self._models)
                     item["manufacturer"] = manufacturer
                     item["model"] = model
                     item["model_descrip"] = descrip
-                    url_to_search = "http://url/to/search" # TODO to be replaced with item["url"]
+                    url_to_search = item["url"] # TODO to be replaced with item["url"]
                     urls = self._listings_collection.find({"$text": {"$search": url_to_search }})
 
                     if urls.count() == 0: # NOTE: this is assuming URL is unique
                         insert_list.append(item)
-                # else:                         # TODO re-enable when data is valid
-                #     error_list.append(item)
+                else:                         # TODO re-enable when data is valid
+                    error_list.append(item)
 
             if len(insert_list) > 0:
                 self._listings_collection.insert_many(insert_list)
