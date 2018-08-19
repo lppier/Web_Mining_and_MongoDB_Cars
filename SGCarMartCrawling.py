@@ -40,6 +40,11 @@ def write_to_file(cars_data):
         json.dump(cars_data, fout)
     print("File with the name cars_data.json has been created successfully.")
 
+def convert_to_float(str_value):
+    try:
+        return float(str_value)
+    except ValueError:
+        return ""
 
 def get_single_car_data(car_url):
     car_attributes = {}
@@ -60,6 +65,7 @@ def get_single_car_data(car_url):
         car_attributes["title"] = ""
 
     car_attributes["url"] = car_url
+    print(car_url)
 
     image_soup = cars_soup.find("ul", {"id": "gallery"})
     images_list = image_soup.find('table')
@@ -93,7 +99,7 @@ def get_single_car_data(car_url):
                 else:
                     feature_value = feature_value.replace(",", "")
             if feature_key in car_attributes_list:
-                if feature_value == '-':
+                if feature_value == '-' or feature_value == '' or feature_value == 'n.a.':
                     car_attributes[feature_key] = ""
                 elif feature_key == 'lifespan':
                     car_attributes[feature_key] = string_to_isoformatdate(feature_value)
@@ -102,19 +108,19 @@ def get_single_car_data(car_url):
                 elif feature_key in car_integer_attributes :
                         car_attributes[feature_key] = int(feature_value)
                 elif feature_key in car_float_attributes :
-                    car_attributes[feature_key] = float(feature_value)
+                    car_attributes[feature_key] = convert_to_float(feature_value)
                 elif feature_key == 'engine_cap':
-                    car_attributes[feature_key] = float((feature_value.split("c"))[0].strip())
+                    car_attributes[feature_key] = convert_to_float((feature_value.split("c"))[0].strip())
                 elif feature_key == 'curb_weight' :
-                    car_attributes[feature_key] = float((feature_value.split("k"))[0].strip())
+                    car_attributes[feature_key] = convert_to_float((feature_value.split("k"))[0].strip())
                 elif feature_key == 'power':
-                    car_attributes['power'] = float((feature_value.split('(')[1].split('b')[0]).strip())
+                    car_attributes['power'] = convert_to_float((feature_value.split('(')[1].split('b')[0]).strip())
                 elif feature_key == 'road_tax':
-                    car_attributes['road_tax'] = float((feature_value.split('/')[0]).strip())
+                    car_attributes['road_tax'] = convert_to_float((feature_value.split('/')[0]).strip())
                 elif feature_key == 'dereg_value':
-                    car_attributes['dereg_value'] = float((feature_value.split('as')[0]).strip())
+                    car_attributes['dereg_value'] = convert_to_float((feature_value.split('as')[0]).strip())
                 elif feature_key == 'depreciation':
-                    car_attributes['depreciation'] = float((feature_value.split('/')[0]).strip())
+                    car_attributes['depreciation'] = convert_to_float((feature_value.split('/')[0]).strip())
                 elif feature_key == 'availability' :
                     if feature_value == 'available':
                        car_attributes[feature_key] = True

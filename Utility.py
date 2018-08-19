@@ -49,7 +49,9 @@ class Utility:
         # these are the required attributes
         required_attributes = ["availability", "transmission", "url", "posted_on", "title", "source"]
         for required_attribute in required_attributes:
-            if not self._is_valid_attribute(required_attribute, item):
+            if not item.get(required_attribute):
+                return (False, "key not present for {0}".format(required_attribute))
+            elif not item[required_attribute]:
                 return (False, "mandatory value required for {0}".format(required_attribute))
         
         # these attribute values must not be strings
