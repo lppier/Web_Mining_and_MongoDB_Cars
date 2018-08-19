@@ -9,7 +9,7 @@ from MongoDBOperations import MongoDBOperations
 
 BASE_URL = "http://www.sgcarmart.com/used_cars/"
 LIMIT = 20
-
+BATCH_SIZE = 10
 
 def prepare_cars_urls():
     cars_urls = []
@@ -65,7 +65,7 @@ def get_single_car_data(car_url):
         car_attributes["title"] = ""
 
     car_attributes["url"] = car_url
-    print(car_url)
+    # print(car_url)
 
     image_soup = cars_soup.find("ul", {"id": "gallery"})
     images_list = image_soup.find('table')
@@ -190,22 +190,42 @@ def get_single_car_data(car_url):
     return car_attributes
 
 def get_all_cars_data():
+    mongo_db_operations = MongoDBOperations()
     cars_urls = prepare_cars_urls()
     cars_data = []
+    
     for car_url in cars_urls:
-        cars_data.append(get_single_car_data(car_url))
+        try:
+            print("Processing URL: " + car_url)
+            cars_data.append(get_single_car_data(car_url))
+            
+        except Exception as ex:
+            print("An error occurred for the url: " + car_url + ". Details: " + str(ex))
+        finally:
+            if len(cars_data) == BATCH_SIZE:
+                success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
+
+                print("Total records: " + str(len(cars_data)))
+                print("Number of records successfully inserted: " + str(success))
+                print("Number of records failed to insert: " + str(failures)) 
+                cars_data = []
+    
+    # if any car data is still left
+    if len(cars_data) > 0:
+            success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
+
+            print("Total records: " + str(len(cars_data)))
+            print("Number of records successfully inserted: " + str(success))
+            print("Number of records failed to insert: " + str(failures))
+
 
     # print(cars_data)
     # write_to_file(cars_data)
-    return cars_data
+    # return cars_data
 
 #prepare_cars_urls()
-cars_data = get_all_cars_data()
+# cars_data = get_all_cars_data()
 #get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
+if __name__ == "__main__":
+    get_all_cars_data()
 
-mongo_db_operations = MongoDBOperations()
-success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
-
-print("Total records: " + str(len(cars_data)))
-print("Number of records successfully inserted: " + str(success))
-print("Number of records failed to insert: " + str(failures))
