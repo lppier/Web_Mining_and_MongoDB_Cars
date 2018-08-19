@@ -8,7 +8,6 @@ import locale
 base_url = "http://www.oneshift.com/used_cars/listings.php"
 
 car_info_dict = {
-    "1st installment": {"name": "first_installment", "type": "currency"},
     "ad posted": {"name": "posted_on", "type": "date"},
     "availabilty": {"name": "availability", "type": "boolean"},
     "car category": {"name": "category", "type": "string"},
@@ -20,7 +19,6 @@ car_info_dict = {
     "dealer consultant name": {"name": "dealer_consultant_name", "type": "string"},
     "depreciation": {"name": "depreciation", "type": "currency"},
     "description": {"name": "description", "type": "string"},
-    "down payment": {"name": "down_payment", "type": "currency"},
     "engine cap": {"name": "engine_cap", "type": "float"},
     "manufactured": {"name": "manufactured", "type": "integer"},
     "features": {"name": "features", "type": "string"},
@@ -33,9 +31,11 @@ car_info_dict = {
     "road tax": {"name": "road_tax", "type": "currency"},
     "selling price": {"name": "price", "type": "currency"},
     "title": {"name": "title", "type": "string"},
-    "total upfront payment": {"name": "total_upfront_payment", "type": "currency"},
-    "transfer fee": {"name": "transfer_fee", "type": "currency"},
     "transmission": {"name": "transmission", "type": "string"},
+    "1st installment": {"name": "1st_installment", "type": "currency"},
+    "down payment": {"name": "down_payment", "type": "currency"},
+    "transfer fee": {"name": "transfer_fee", "type": "currency"},
+    "total upfront payment": {"name": "total_upfront_payment", "type": "currency"},
     "url": {"name": "url", "type": "string"}
 }
 
@@ -145,6 +145,7 @@ def fetch_cars_data(url):
     loan_elements_values = car_element.select(".used-car-loan > dl > dd")
 
     i = 0
+    car_info["upfront_payment"] = {}
     for element_key in loan_elements_keys:
         key = element_key.text.strip().replace(":", "").lower()
 
@@ -154,7 +155,7 @@ def fetch_cars_data(url):
         else:
             value = loan_elements_values[i].text.strip()
 
-        car_info[car_info_dict[key]["name"]] = process_value(key, value)
+        car_info["upfront_payment"][car_info_dict[key]["name"]] = process_value(key, value)
         i += 1
 
     # dealer information
