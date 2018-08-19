@@ -7,10 +7,12 @@ import locale
 from datetime import datetime, timedelta
 import time
 import random
+from MongoDBOperations import MongoDBOperations
 
 BASE_URL = "http://www.oneshift.com/used_cars/listings.php"
-DATA_FILE = "../data/one_shift_cars_data.json"
+DATA_FILE = "data/one_shift_cars_data.json"
 CRAWL_PAGE_LIMIT = 20
+BATCH_SIZE = 20
 
 car_info_dict = {
     "ad posted": {"name": "posted_on", "type": "date"},
@@ -114,25 +116,34 @@ def prepare_cars_urls():
     return cars_urls
 
 
-def get_all_cars_data():
+def fetch_all_cars_data():
+    mongo_db_operations = MongoDBOperations()
     cars_urls = prepare_cars_urls()
     cars_data = []
-    i = 0
-    j = 1
 
     for car_url in cars_urls:
-        if i % 20 == 0:
-            time.sleep(random.randint(5, 10))
-            write_to_file(cars_data, filename=DATA_FILE + ".{}".format(j))
-            cars_data = []
-            j += 1
-        else:
-            time.sleep(random.randint(0, 2))
-        cars_data.append(fetch_cars_data(car_url))
-        i += 1
+        time.sleep(random.randint(0, 2))
+        try:
+            cars_data.append(fetch_cars_data(car_url))
+        except Exception as ex:
+            print("An error occurred for the url: " + car_url + ". Details: " + str(ex))
+        finally:
+            if len(cars_data) == BATCH_SIZE:
+                time.sleep(random.randint(5, 10))
+                success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
 
-    write_to_file(cars_data, filename=DATA_FILE + ".{}".format(j))
-    return cars_data
+                print("Total records: " + str(len(cars_data)))
+                print("Number of records successfully inserted: " + str(success))
+                print("Number of records failed to insert: " + str(failures))
+                cars_data = []
+
+    # if any car data is still left
+    if len(cars_data) > 0:
+        success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
+
+        print("Total records: " + str(len(cars_data)))
+        print("Number of records successfully inserted: " + str(success))
+        print("Number of records failed to insert: " + str(failures))
 
 
 def write_to_file(cars_data, filename=DATA_FILE):
@@ -254,4 +265,4 @@ if __name__ == "__main__":
     # print(fetch_cars_links(BASE_URL))
     # print(json.dumps(fetch_cars_data("http://www.oneshift.com/used_cars/ads_detail.php?adid=231795"), sort_keys=True,
     #                  indent=4))
-    print(get_all_cars_data())
+    fetch_all_cars_data()
