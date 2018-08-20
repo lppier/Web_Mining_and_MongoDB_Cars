@@ -244,9 +244,8 @@ def get_single_car_data(car_url):
                             if not num_there(person):
                                 if person != 'contact person(s)':
                                     contact_persons.append(person)
-                        if len(contact_persons) < 2:
-                            seller_info['contact_persons'] = contact_persons[0]
-                        else:
+                            else:
+                                contact_persons.append(person)
                             seller_info['contact_persons'] = contact_persons
 
                     else:
