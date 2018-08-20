@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import unidecode
 import requests
 import csv
 
@@ -13,7 +14,7 @@ manufacturer_elements = soup.find(id="make_attach_menu_child")
 
 for element in manufacturer_elements:
     manufacturer = dict()
-    manufacturer["name"] = element.text
+    manufacturer["name"] = unidecode.unidecode(element.text)
     manufacturer["link"] = "http://www.sgcarmart.com/used_cars/" + element["href"]
     manufacturers.append(manufacturer)
 
@@ -21,7 +22,7 @@ manufacturers.pop(0)
 
 models = []
 
-with open('../data/sgcarmart_car_models.csv', 'w') as myfile:
+with open('../initial_data/sgcarmart_car_models.csv', 'w') as myfile:
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
     wr.writerow(["manufacturer", "model"])
 

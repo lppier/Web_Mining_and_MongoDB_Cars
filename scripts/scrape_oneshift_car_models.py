@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import unidecode
 import urllib.parse
 import requests
 import csv
@@ -17,21 +18,21 @@ for element in manufacturer_elements:
     for child in element:
         if child.name == "li":
             manufacturer = dict()
-            manufacturer["name"] = child.find("a").text
+            manufacturer["name"] = unidecode.unidecode(child.find("a").text)
             manufacturer["link"] = "http://www.oneshift.com/used_cars/listings.php?make=" + \
-                                   urllib.parse.quote_plus(child.find("a").text)
+                                   urllib.parse.quote_plus(unidecode.unidecode(child.find("a").text))
             manufacturers.append(manufacturer)
 
 manufacturers.pop(0)
 
 models = []
 
-with open('../data/oneshift_car_models.csv', 'w') as myfile:
+with open('../initial_data/oneshift_car_models.csv', 'w') as myfile:
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
     wr.writerow(["manufacturer", "model"])
 
     for manufacturer in manufacturers:
-        print("Scraping", manufacturer["name"], "models")
+        print("Scraping {} models on {}".format(manufacturer["name"], manufacturer["link"]))
         html_doc = requests.get(manufacturer["link"])
         soup = BeautifulSoup(html_doc.text, 'html.parser')
 

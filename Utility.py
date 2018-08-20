@@ -1,4 +1,5 @@
 from nltk import word_tokenize
+import unidecode
 import re
 
 
@@ -19,7 +20,7 @@ class Utility:
         print(str)
         manu_model = []
         tokens = word_tokenize(str)
-        tokens_lower = [token.lower() for token in tokens]
+        tokens_lower = [unidecode.unidecode(token.lower()) for token in tokens]
         for manufacturer in manu_list:
             if manufacturer.lower() in tokens_lower:
                 manu_model.append(manufacturer)

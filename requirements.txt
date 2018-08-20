@@ -42,4 +42,5 @@ smart-open==1.6.0
 splinter==0.8.0
 tornado==5.1
 twython==3.7.0
+Unidecode==1.0.22
 urllib3==1.23
