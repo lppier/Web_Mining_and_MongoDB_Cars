@@ -7,26 +7,32 @@ import json
 from MongoDBOperations import MongoDBOperations
 
 BASE_URL = "http://www.sgcarmart.com/used_cars/"
-LIMIT = 20
+LIMIT = 999999
 BATCH_SIZE = 10
+TIMEOUT = 5
 
 
 def prepare_cars_urls():
     cars_urls = []
     i = 0
     match_pattern = "info.php\?[^\" a-z]*"
-    while i < LIMIT:
-        url = BASE_URL + "listing.php?BRSR=" + str(i) + "&RPG=20"
-        print(url)
-        index_page = requests.get(url)
-        soup = BeautifulSoup(index_page.content, 'html.parser')
+    try:
+        while i < LIMIT:
+            url = BASE_URL + "listing.php?BRSR=" + str(i) + "&RPG=20"
+            print(url)
+            index_page = requests.get(url, timeout=TIMEOUT)
+            soup = BeautifulSoup(index_page.content, 'html.parser')
 
-        for link in soup.find_all('a'):
-            if re.search(match_pattern, link.get('href')):
-                cars_urls.append(BASE_URL + link.get('href'))
-        i = i + 20
-    car_urls_set = set(cars_urls)
-    return car_urls_set
+            for link in soup.find_all('a'):
+                if re.search(match_pattern, link.get('href')):
+                    cars_urls.append(BASE_URL + link.get('href'))
+            i = i + 20
+       
+    except Exception as ex:
+        print("LIMIT might have exceeded. " + str(ex))
+    finally:
+        car_urls_set = set(cars_urls)
+        return car_urls_set
 
 
 def string_to_isoformatdate(datestring):

@@ -53,15 +53,8 @@ class Utility:
             if item.get(required_attribute) is None:
                 return False, "key not present for {0}".format(required_attribute)
 
-        # these attribute values must not be strings
-        real_valued_attributes = ["price"]
-
         # these attribute values must be booleans
         boolean_valued_attributes = ["availability"]
-
-        for real_valued_attribute in real_valued_attributes:
-            if item.get(real_valued_attribute) is not None and not isinstance(item[real_valued_attribute], float):
-                return False, "Real value required for {0}".format(real_valued_attribute)
 
         for boolean_valued_attribute in boolean_valued_attributes:
             if item.get(boolean_valued_attribute) is not None and not isinstance(item[boolean_valued_attribute], bool):
