@@ -53,25 +53,29 @@ class MongoDBOperations:
 
             # TODO data has to be valid now for it to be inserted, it will show error now due to verification
             for item in listing_details_list:
-                validity_check_result = self._utility.is_valid_entry(item)
-                if validity_check_result[0]:  # TODO re-enable when data is valid
-                    title = item["title"]
-                    manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
-                                                                                        self._models)
-                    item["manufacturer"] = manufacturer
-                    item["model"] = model
-                    item["model_descrip"] = descrip
-                    insert_list.append(item)
+                try:
+                    validity_check_result = self._utility.is_valid_entry(item)
+                    if validity_check_result[0]:  # TODO re-enable when data is valid
+                        title = item["title"]
+                        manufacturer, model, descrip = self._utility.manufacturer_and_model(title, self._manufacturers,
+                                                                                            self._models)
+                        item["manufacturer"] = manufacturer
+                        item["model"] = model
+                        item["model_descrip"] = descrip
+                        insert_list.append(item)
 
-                    # TODO: @Pier please help fix the below 
-                    # url_to_search = item["url"] # TODO to be replaced with item["url"]
-                    #urls = self._listings_collection.find({"$text": {"$search": url_to_search }})
+                        # TODO: @Pier please help fix the below 
+                        # url_to_search = item["url"] # TODO to be replaced with item["url"]
+                        #urls = self._listings_collection.find({"$text": {"$search": url_to_search }})
 
-                    # if urls.count() == 0: # NOTE: this is assuming URL is unique
-                        # insert_list.append(item)
-                else: 
-                    # TODO re-enable when data is valid
-                    item["error_details"] = validity_check_result[1]
+                        # if urls.count() == 0: # NOTE: this is assuming URL is unique
+                            # insert_list.append(item)
+                    else: 
+                        # TODO re-enable when data is valid
+                        item["error_details"] = validity_check_result[1]
+                        error_list.append(item)
+                except Exception as ex:
+                    item["error_details"] = str(ex)
                     error_list.append(item)
 
             if len(insert_list) > 0:
