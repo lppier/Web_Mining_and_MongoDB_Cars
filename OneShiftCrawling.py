@@ -45,7 +45,8 @@ car_info_dict = {
     "down payment": {"name": "down_payment", "type": "currency"},
     "transfer fee": {"name": "transfer_fee", "type": "currency"},
     "total upfront payment": {"name": "total_upfront_payment", "type": "currency"},
-    "url": {"name": "url", "type": "string"}
+    "url": {"name": "url", "type": "string"},
+    "source": {"name": "source", "type": "string"}
 }
 
 
@@ -124,17 +125,18 @@ def fetch_all_cars_data():
     for car_url in cars_urls:
         time.sleep(random.randint(0, 2))
         try:
+            print("Fetching car listing information from {}".format(car_url))
             cars_data.append(fetch_cars_data(car_url))
         except Exception as ex:
             print("An error occurred for the url: " + car_url + ". Details: " + str(ex))
         finally:
             if len(cars_data) == BATCH_SIZE:
-                time.sleep(random.randint(5, 10))
                 success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
 
                 print("Total records: " + str(len(cars_data)))
                 print("Number of records successfully inserted: " + str(success))
                 print("Number of records failed to insert: " + str(failures))
+                time.sleep(random.randint(5, 10))
                 cars_data = []
 
     # if any car data is still left
@@ -172,7 +174,8 @@ def fetch_cars_data(url):
     car_info = dict()
     car_info["title"] = car_element.select_one("div:nth-of-type(1) > div:nth-of-type(1) > h1 > a").text.strip().lower()
     car_info["url"] = url
-    print(car_info)
+    car_info["source"] = "oneshift"
+    car_info["valid"] = True
 
     # car image url
     try:

@@ -45,29 +45,27 @@ class Utility:
             return False
 
     def is_valid_entry(self, item):
-        
+
         # these are the required attributes
         required_attributes = ["availability", "transmission", "url", "posted_on", "title", "source"]
         for required_attribute in required_attributes:
-            if not item.get(required_attribute):
-                return (False, "key not present for {0}".format(required_attribute))
-            elif not item[required_attribute]:
-                return (False, "mandatory value required for {0}".format(required_attribute))
-        
+            if item.get(required_attribute) is None:
+                return False, "key not present for {0}".format(required_attribute)
+
         # these attribute values must not be strings
         real_valued_attributes = ["price"]
 
         # these attribute values must be booleans
         boolean_valued_attributes = ["availability"]
-        
+
         for real_valued_attribute in real_valued_attributes:
-            if item[real_valued_attribute] and type(item[real_valued_attribute]) == type("str"):
-                return (False, "Real value required for {0}".format(real_valued_attribute))
+            if item.get(real_valued_attribute) is not None and not isinstance(item[real_valued_attribute], float):
+                return False, "Real value required for {0}".format(real_valued_attribute)
 
         for boolean_valued_attribute in boolean_valued_attributes:
-            if item[boolean_valued_attribute] and type(item[boolean_valued_attribute]) != type(True):
-                return (False, "Boolean value required for {0}".format(boolean_valued_attribute))
-        return (True, "None")
+            if item.get(boolean_valued_attribute) is not None and not isinstance(item[boolean_valued_attribute], bool):
+                return False, "Boolean value required for {0}".format(boolean_valued_attribute)
+        return True, "None"
 
 # test_str = "Honda Civic Type-R 2.0M VTEC Turbo GT"
 # list_of_manufacturers =  ['Honda', 'Volkswagen', 'Ferrari', 'Nissan',
