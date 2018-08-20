@@ -124,11 +124,16 @@ def fetch_all_cars_data():
 
     for car_url in cars_urls:
         time.sleep(random.randint(0, 2))
+        car_data = dict()
         try:
+            car_data = fetch_cars_data(car_url)
             print("Fetching car listing information from {}".format(car_url))
-            cars_data.append(fetch_cars_data(car_url))
+            cars_data.append(car_data)
         except Exception as ex:
-            print("An error occurred for the url: " + car_url + ". Details: " + str(ex))
+            error_text = str(ex)
+            print("An error occurred for the url: " + car_url + ". Details: " + error_text)
+            listing_detail = {"url": car_url, "data": car_data}
+            mongo_db_operations.insert_crawling_error(listing_detail, error_text)
         finally:
             if len(cars_data) == BATCH_SIZE:
                 success, failures = mongo_db_operations.insert_multiple_listings(cars_data)

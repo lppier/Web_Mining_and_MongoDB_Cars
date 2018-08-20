@@ -4,26 +4,26 @@ import re
 import dateutil.parser as parser
 import json
 
-
 from MongoDBOperations import MongoDBOperations
 
 BASE_URL = "http://www.sgcarmart.com/used_cars/"
 LIMIT = 20
 BATCH_SIZE = 10
 
+
 def prepare_cars_urls():
     cars_urls = []
     i = 0
     match_pattern = "info.php\?[^\" a-z]*"
     while i < LIMIT:
-        url = BASE_URL+"listing.php?BRSR="+str(i)+"&RPG=20"
+        url = BASE_URL + "listing.php?BRSR=" + str(i) + "&RPG=20"
         print(url)
         index_page = requests.get(url)
         soup = BeautifulSoup(index_page.content, 'html.parser')
 
         for link in soup.find_all('a'):
             if re.search(match_pattern, link.get('href')):
-                cars_urls.append(BASE_URL+link.get('href'))
+                cars_urls.append(BASE_URL + link.get('href'))
         i = i + 20
     car_urls_set = set(cars_urls)
     return car_urls_set
@@ -40,19 +40,24 @@ def write_to_file(cars_data):
         json.dump(cars_data, fout)
     print("File with the name cars_data.json has been created successfully.")
 
+
 def convert_to_float(str_value):
     try:
         return float(str_value)
     except ValueError:
         return ""
 
+
 def num_there(s):
     return any(i.isdigit() for i in s)
 
+
 def get_single_car_data(car_url):
     car_attributes = {}
-    car_attributes_list = ['price', 'depreciation', 'reg_date', 'lifespan', 'manufactured', 'mileage', 'transmission', 'engine_cap', 'road_tax',
-                           'power', 'curb_weight', 'features', 'accessories', 'description', 'coe', 'omv', 'arf', 'dereg_value',
+    car_attributes_list = ['price', 'depreciation', 'reg_date', 'lifespan', 'manufactured', 'mileage', 'transmission',
+                           'engine_cap', 'road_tax',
+                           'power', 'curb_weight', 'features', 'accessories', 'description', 'coe', 'omv', 'arf',
+                           'dereg_value',
                            'no_of_owners', 'type_of_veh', 'category', 'availability', 'depreciation']
     car_integer_attributes = ['no_of_owners', 'manufactured']
     car_float_attributes = ['price', 'coe', 'omv', 'arf']
@@ -108,13 +113,13 @@ def get_single_car_data(car_url):
                     car_attributes[feature_key] = string_to_isoformatdate(feature_value)
                 elif feature_key == 'reg_date':
                     car_attributes[feature_key] = string_to_isoformatdate(((str(feature_value).split('('))[0]).strip())
-                elif feature_key in car_integer_attributes :
-                        car_attributes[feature_key] = int(feature_value)
-                elif feature_key in car_float_attributes :
+                elif feature_key in car_integer_attributes:
+                    car_attributes[feature_key] = int(feature_value)
+                elif feature_key in car_float_attributes:
                     car_attributes[feature_key] = convert_to_float(feature_value)
                 elif feature_key == 'engine_cap':
                     car_attributes[feature_key] = convert_to_float((feature_value.split("c"))[0].strip())
-                elif feature_key == 'curb_weight' :
+                elif feature_key == 'curb_weight':
                     car_attributes[feature_key] = convert_to_float((feature_value.split("k"))[0].strip())
                 elif feature_key == 'power':
                     car_attributes['power'] = convert_to_float((feature_value.split('(')[1].split('b')[0]).strip())
@@ -124,11 +129,11 @@ def get_single_car_data(car_url):
                     car_attributes['dereg_value'] = convert_to_float((feature_value.split('as')[0]).strip())
                 elif feature_key == 'depreciation':
                     car_attributes['depreciation'] = convert_to_float((feature_value.split('/')[0]).strip())
-                elif feature_key == 'availability' :
+                elif feature_key == 'availability':
                     if feature_value == 'available':
-                       car_attributes[feature_key] = True
+                        car_attributes[feature_key] = True
                     else:
-                       car_attributes[feature_key] = False
+                        car_attributes[feature_key] = False
 
                 else:
                     car_attributes[feature_key] = feature_value
@@ -148,7 +153,7 @@ def get_single_car_data(car_url):
     updated_on_date_value = string_to_isoformatdate(updated_on_value)
     car_attributes['updated_on'] = updated_on_date_value
 
-    #upfront_payment
+    # upfront_payment
     upfront_payment = {}
     upfront_payment_soup = cars_soup.find("div", {"id": "upfrontpayment"})
     if upfront_payment_soup:
@@ -190,10 +195,11 @@ def get_single_car_data(car_url):
                             upfront_payment['total_upfront_payment'] = float(payment_value.split('(')[0].strip())
             car_attributes["upfront_payment"] = upfront_payment
 
-             #Seller Information
+            # Seller Information
     seller_info = {}
-    seller_attribute_list = ['company', 'address', 'office_no', 'contact_persons', 'location', 'contact_no', 'Contact Person(s)']
-    contact_persons =[]
+    seller_attribute_list = ['company', 'address', 'office_no', 'contact_persons', 'location', 'contact_no',
+                             'Contact Person(s)']
+    contact_persons = []
 
     seller_info_soup = cars_soup.find("div", {"id": "sellerinfo"})
     if seller_info_soup:
@@ -227,15 +233,15 @@ def get_single_car_data(car_url):
                         else:
                             seller_info['company'] = seller_value
                     elif seller_key == 'contact_persons':
-                            for data in seller_data:
-                                person = ((''.join(data.findAll(text=True))).strip()).lower()
-                                if not num_there(person):
-                                    if person != 'contact person(s)':
-                                        contact_persons.append(person)
-                            if len(contact_persons) < 2:
-                                seller_info['contact_persons'] = contact_persons[0]
-                            else:
-                                seller_info['contact_persons'] = contact_persons
+                        for data in seller_data:
+                            person = ((''.join(data.findAll(text=True))).strip()).lower()
+                            if not num_there(person):
+                                if person != 'contact person(s)':
+                                    contact_persons.append(person)
+                        if len(contact_persons) < 2:
+                            seller_info['contact_persons'] = contact_persons[0]
+                        else:
+                            seller_info['contact_persons'] = contact_persons
 
                     else:
                         seller_info[seller_key] = seller_value
@@ -244,27 +250,28 @@ def get_single_car_data(car_url):
         else:
             seller_info['type'] = 'direct_seller'
 
-
         car_attributes['seller_information'] = seller_info
         # print(car_attributes)
-        #print(car_attributes)
+        # print(car_attributes)
     return car_attributes
+
 
 def get_all_cars_data():
     mongo_db_operations = MongoDBOperations()
     cars_urls = prepare_cars_urls()
     cars_data = []
-    
+
     for car_url in cars_urls:
+        car_data = dict()
         try:
             car_data = get_single_car_data(car_url)
             print("Processing URL: " + car_url)
             cars_data.append(car_data)
-            
+
         except Exception as ex:
             error_text = str(ex)
             print("An error occurred for the url: " + car_url + ". Details: " + error_text)
-            listing_detail = { "url": car_url, "data": car_data }
+            listing_detail = {"url": car_url, "data": car_data}
             mongo_db_operations.insert_crawling_error(listing_detail, error_text)
         finally:
             if len(cars_data) == BATCH_SIZE:
@@ -272,25 +279,24 @@ def get_all_cars_data():
 
                 print("Total records: " + str(len(cars_data)))
                 print("Number of records successfully inserted: " + str(success))
-                print("Number of records failed to insert: " + str(failures)) 
+                print("Number of records failed to insert: " + str(failures))
                 cars_data = []
-    
+
     # if any car data is still left
     if len(cars_data) > 0:
-            success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
+        success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
 
-            print("Total records: " + str(len(cars_data)))
-            print("Number of records successfully inserted: " + str(success))
-            print("Number of records failed to insert: " + str(failures))
-
+        print("Total records: " + str(len(cars_data)))
+        print("Number of records successfully inserted: " + str(success))
+        print("Number of records failed to insert: " + str(failures))
 
     # print(cars_data)
     # write_to_file(cars_data)
     # return cars_data
 
-#prepare_cars_urls()
+
+# prepare_cars_urls()
 # cars_data = get_all_cars_data()
-#get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
+# get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
 if __name__ == "__main__":
     get_all_cars_data()
-
