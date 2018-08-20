@@ -94,6 +94,11 @@ class MongoDBOperations:
         else:
             print("No listing detail to insert...")
             return 0, None
+    
+    def insert_crawling_error(self, listing_detail, error_text):
+        if listing_detail:
+            listing_detail["error_details"] = "Crawling error: " + error_text
+            self._uninserted_collection.insert_many([listing_detail])
 
     def _get_all_manufacturers(self):
         """
