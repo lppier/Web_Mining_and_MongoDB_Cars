@@ -201,7 +201,7 @@ def fetch_cars_data(url):
             elif key == "milleage":
                 value = items[1].text.strip().replace(" km", "")
             elif key == "availabilty":
-                value = True if items[1].text.strip() == "available" else False
+                value = True if items[1].text.strip().lower() == "available" else False
             elif key == "features":
                 values = []
                 for val in items[1].find_all("li"):
