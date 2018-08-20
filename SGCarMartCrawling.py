@@ -5,7 +5,7 @@ import dateutil.parser as parser
 import json
 
 
-from MongoDBOperations import MongoDBOperations
+#from MongoDBOperations import MongoDBOperations
 
 BASE_URL = "http://www.sgcarmart.com/used_cars/"
 LIMIT = 20
@@ -230,12 +230,14 @@ def get_single_car_data(car_url):
                             for data in seller_data:
                                 person = ((''.join(data.findAll(text=True))).strip()).lower()
                                 if not num_there(person):
+
                                     if person != 'contact person(s)':
                                         contact_persons.append(person)
-                            if len(contact_persons) < 2:
-                                seller_info['contact_persons'] = contact_persons[0]
-                            else:
+                                else:
+                                    contact_persons.append(person)
                                 seller_info['contact_persons'] = contact_persons
+
+
 
                     else:
                         seller_info[seller_key] = seller_value
@@ -259,12 +261,14 @@ def get_all_cars_data():
     # write_to_file(cars_data)
     return cars_data
 
-#get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=699459&DL=1180')
+get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=764063&DL=1000')
+
+#http://www.sgcarmart.com/used_cars/info.php?ID=764063&DL=1000
 
 # #prepare_cars_urls()
 # cars_data = get_all_cars_data()
 # #get_single_car_data('http://www.sgcarmart.com/used_cars/info.php?ID=763736&DL=2351')
-#
+#http://www.sgcarmart.com/used_cars/info.php?ID=751428&DL=1194
 # mongo_db_operations = MongoDBOperations()
 # success, failures = mongo_db_operations.insert_multiple_listings(cars_data)
 #
