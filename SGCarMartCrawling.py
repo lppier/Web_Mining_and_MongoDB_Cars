@@ -7,7 +7,7 @@ import json
 from MongoDBOperations import MongoDBOperations
 
 BASE_URL = "http://www.sgcarmart.com/used_cars/"
-LIMIT = 999999
+LIMIT = 30160
 BATCH_SIZE = 10
 TIMEOUT = 5
 
