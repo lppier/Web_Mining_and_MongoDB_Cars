@@ -64,12 +64,6 @@ class MongoDBOperations:
                         item["model_descrip"] = descrip
                         insert_list.append(item)
 
-                        # TODO: @Pier please help fix the below 
-                        # url_to_search = item["url"] # TODO to be replaced with item["url"]
-                        #urls = self._listings_collection.find({"$text": {"$search": url_to_search }})
-
-                        # if urls.count() == 0: # NOTE: this is assuming URL is unique
-                            # insert_list.append(item)
                     else: 
                         # TODO re-enable when data is valid
                         item["error_details"] = validity_check_result[1]
