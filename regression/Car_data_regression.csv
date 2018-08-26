@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 depreciation,normalized_depreciation,dereg_value,normalized_dereg_value,engine_cap,normalized_engine_cap,Age,normalized_age,manufacturer,mileage,normalized_mileage,no_of_owners,type_of_veh,price,normalized_price
 61420,0.572830599,171628,0.75938596,5998,0.949509523,7,0.737350465,Bentley,19000,0.746041626,1,sports car,348900,0.713966185
 9640,0.160788747,26814,0.43451143,1598,0.385529348,8,0.787948605,Toyota,88178,0.876858144,1,mid-sized sedan,37000,0.305621119
@@ -7630,8 +7631,13 @@ depreciation,normalized_depreciation,dereg_value,normalized_dereg_value,engine_c
 13510,0.235886906,68827,0.599480863,1999,0.480996536,7,0.737350465,Rover,130371,0.910184183,2,suv,80000,0.44594957
 15240,0.262697542,59254,0.573272077,1998,0.480783179,5,0.609853335,Subaru,47000,0.823232465,2,sports car,103800,0.493345025
 =======
+=======
+>>>>>>> Stashed changes
 depreciation,dereg_value,engine_cap,Age,mileage,no_of_owners,type_of_veh=bus/mini bus,type_of_veh=hatchback,type_of_veh=luxury sedan,type_of_veh=mid-sized sedan,type_of_veh=mpv,type_of_veh=sports car,type_of_veh=stationwagon,type_of_veh=suv,manufacturer=Audi,manufacturer=BMW,manufacturer=Bentley,manufacturer=Chery,manufacturer=Chevrolet,manufacturer=Chrysler,manufacturer=Citroen,manufacturer=Daihatsu,manufacturer=Dodge,manufacturer=Ferrari,manufacturer=Fiat,manufacturer=Ford,manufacturer=Foton,manufacturer=Honda,manufacturer=Hyundai,manufacturer=Infiniti,manufacturer=Jaguar,manufacturer=Jeep,manufacturer=Kia,manufacturer=Lamborghini,manufacturer=Lexus,manufacturer=Lotus,manufacturer=Maserati,manufacturer=Maybach,manufacturer=Mazda,manufacturer=McLaren,manufacturer=Mercedes-Benz,manufacturer=Mini,manufacturer=Mitsubishi,manufacturer=Mitsuoka,manufacturer=Nissan,manufacturer=Opel,manufacturer=Perodua,manufacturer=Peugeot,manufacturer=Porsche,manufacturer=Proton,manufacturer=Renault,manufacturer=Rolls-Royce,manufacturer=Rover,manufacturer=SEAT,manufacturer=Saab,manufacturer=Skoda,manufacturer=Smart,manufacturer=Ssangyong,manufacturer=Subaru,manufacturer=Suzuki,manufacturer=Toyota,manufacturer=Volkswagen,manufacturer=Volvo,price
 continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous,continuous
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,class
 3.4774240779550403,2.3821778656726305,4.870279140623174,0.43520611727462305,-1.0391173747056415,-0.653503475747992,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,348900.0
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
