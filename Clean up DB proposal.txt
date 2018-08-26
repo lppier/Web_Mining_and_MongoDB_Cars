@@ -1,0 +1,4 @@
+Double counting same cars listed in both website:
+
+1) From our analytics, we know that the majority of double listing are done by dealers
+2) We already crawled the dealers company name. So we can program a database cleanup routine when crawled to filter out the duplicated records.
