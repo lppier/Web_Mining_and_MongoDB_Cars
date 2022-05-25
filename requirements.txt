@@ -23,7 +23,7 @@ numpy==1.14.3
 oauthlib==2.1.0
 pandas==0.23.4
 pycparser==2.18
-PyJWT==1.6.4
+PyJWT==2.4.0
 pymongo==3.7.1
 pyOpenSSL==18.0.0
 pyparsing==2.2.0
